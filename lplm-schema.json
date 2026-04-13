@@ -1,0 +1,701 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://iv-i.org/lplm/v1/schema.json",
+  "title": "IVI Lean PLM Technical Specification — Data Model Schema v1.1-draft",
+  "description": "Machine-readable JSON Schema derived from the IVI Lean Product Lifecycle Management (LPLM) Technical Specification v1.0 (Public Review R1, March 2026). v1.1-draft additions: semanticId on BaseEntity for AAS/Catena-X interoperability; serial_number/batch_id on ProductionItem and ProductionResult for traceability alignment. This schema defines all normative entities specified in Chapters 8–10 of the specification, enabling interoperable data exchange between stakeholders in discrete manufacturing value chains. Reference: https://iv-i.org",
+  "type": "object",
+  "$defs": {
+
+    "BaseEntity": {
+      "type": "object",
+      "description": "Common attributes shared by ALL entities (Table 88). These are omitted from individual entity tables in the specification but MUST be present in every instance.",
+      "properties": {
+        "id":          { "type": "string", "description": "Primary key — unique identifier for the entity instance" },
+        "semanticId":  { "type": "string", "format": "uri", "description": "Optional globally unique semantic identifier (IRI) referencing an external concept dictionary (e.g., ECLASS, IEC CDD, AAS ConceptDescription). Enables cross-standard interoperability with AAS Submodels and Catena-X Aspect Models." },
+        "name":        { "type": "string", "description": "Human-readable name of the entity instance" },
+        "classification": { "type": "string", "description": "Classification tag; may be used to define subclasses" },
+        "status":      {
+          "type": "string",
+          "description": "Lifecycle status of the entity",
+          "enum": ["draft", "active", "inactive", "obsolete"],
+          "$comment": "TODO: Enumeration values are illustrative. Official code list to be defined by IVI governance."
+        },
+        "registered_at":  { "type": "string", "format": "date-time", "description": "Timestamp of initial registration" },
+        "updated_at":     { "type": "string", "format": "date-time", "description": "Timestamp of last update" },
+        "created_by":     { "type": "string", "description": "Name or ID of the creator" },
+        "approved_by":    { "type": "string", "description": "Name or ID of the approver" },
+        "note":           { "type": "string", "description": "Free-text remarks" }
+      },
+      "required": ["id"]
+    },
+
+    "Company": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Company (事業者) — A business entity such as an OEM, supplier, or business unit. Aligns with IEC 62264 Enterprise entity.",
+      "properties": {
+        "location":     { "type": "string", "description": "Physical address or geo-location" },
+        "specification": { "type": "string", "description": "Descriptive text about the company" },
+        "value":        { "type": "number", "description": "Quantitative KPI baseline value" },
+        "unit":         { "type": "string", "description": "Unit of the quantitative value" }
+      }
+    },
+
+    "Site": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Site (サイト) — A physical or logical manufacturing site within a company. Aligns with IEC 62264 Site.",
+      "properties": {
+        "company_id":    { "type": "string", "description": "FK → Company.id" },
+        "location":      { "type": "string" },
+        "specification": { "type": "string" },
+        "value":         { "type": "number" },
+        "unit":          { "type": "string" }
+      },
+      "required": ["id", "company_id"]
+    },
+
+    "Area": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Area (エリア) — A functional area within a site (e.g., machining shop, assembly zone). Aligns with IEC 62264 Area.",
+      "properties": {
+        "site_id":       { "type": "string", "description": "FK → Site.id" },
+        "location":      { "type": "string" },
+        "specification": { "type": "string" },
+        "value":         { "type": "number" },
+        "unit":          { "type": "string" }
+      },
+      "required": ["id", "site_id"]
+    },
+
+    "ProductionLine": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Production Line (生産ライン) — A production line within an area, consisting of multiple stations with assigned equipment and personnel.",
+      "properties": {
+        "area_id":       { "type": "string", "description": "FK → Area.id" },
+        "location":      { "type": "string" },
+        "specification": { "type": "string" },
+        "value":         { "type": "number" },
+        "unit":          { "type": "string" }
+      },
+      "required": ["id", "area_id"]
+    },
+
+    "Calendar": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Calendar (カレンダ) — Defines discrete time progression for planning (shifts, working days, etc.).",
+      "properties": {
+        "company_id":    { "type": "string", "description": "FK → Company.id" },
+        "site_id":       { "type": "string", "description": "Optional FK → Site.id for site-specific calendar" },
+        "specification": { "type": "string" }
+      },
+      "required": ["id", "company_id"]
+    },
+
+    "Term": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.1 Term (ターム) — A time period within a Calendar, with start/end and a duration value.",
+      "properties": {
+        "calendar_id":   { "type": "string", "description": "FK → Calendar.id" },
+        "sequence":      { "type": "string", "description": "Sequential index within the calendar" },
+        "specification": { "type": "string" },
+        "start_datetime": { "type": "string", "format": "date-time" },
+        "end_datetime":   { "type": "string", "format": "date-time" },
+        "value":         { "type": "number", "description": "Duration or count within the term" },
+        "unit":          { "type": "string", "description": "Unit (hours, days, shifts, etc.)" }
+      },
+      "required": ["id", "calendar_id"]
+    },
+
+    "ProductionItem": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.3 Production Item (生産品目) — Core BOM entity. A product, sub-assembly, or component that is manufactured or procured.",
+      "properties": {
+        "item_group_id":   { "type": "string", "description": "FK → ItemGroup.id" },
+        "document_id":     { "type": "string", "description": "FK → ItemDocument.id — link to technical documentation" },
+        "serial_number":   { "type": "string", "description": "Individual serial number for unit-level traceability (aligns with Catena-X BOM-as-built / Digital Product Passport)" },
+        "batch_id":        { "type": "string", "description": "Batch or lot identifier for batch-level traceability (aligns with Catena-X Batch aspect model)" },
+        "specification":   { "type": "string" },
+        "unit":            { "type": "string" },
+        "value":           { "type": "number", "description": "Standard quantity or KPI baseline" }
+      },
+      "required": ["id"]
+    },
+
+    "ItemGroup": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.3 Item Group (品目グループ) — Groups production items by shared function or product family (series/variant management).",
+      "properties": {
+        "area_id":       { "type": "string", "description": "FK → Area.id" },
+        "specification": { "type": "string" },
+        "unit":          { "type": "string" },
+        "value":         { "type": "number" }
+      }
+    },
+
+    "ItemConfiguration": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.3 Item Configuration (品目構成) — Defines parent-child BOM structure. Corresponds to Bill of Materials.",
+      "properties": {
+        "parent_item_id":  { "type": "string", "description": "FK → ProductionItem.id (parent)" },
+        "child_item_id":   { "type": "string", "description": "FK → ProductionItem.id (child component)" },
+        "specification":   { "type": "string" },
+        "unit":            { "type": "string" },
+        "quantity":        { "type": "number", "description": "Quantity of child items per parent" }
+      },
+      "required": ["id", "parent_item_id", "child_item_id"]
+    },
+
+    "ItemPart": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.3 Item Part (品目部位) — A physical region or sub-section of a production item (e.g., surface, joint, interface zone).",
+      "properties": {
+        "production_item_id": { "type": "string", "description": "FK → ProductionItem.id" },
+        "item_group_id":      { "type": "string", "description": "FK → ItemGroup.id" },
+        "specification":      { "type": "string" },
+        "value":              { "type": "number" },
+        "unit":               { "type": "string" }
+      },
+      "required": ["id", "production_item_id"]
+    },
+
+    "ItemFunction": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.3 Item Function (品目機能) — A functional capability attributed to a production item (links to F-BOM concepts).",
+      "properties": {
+        "production_item_id": { "type": "string", "description": "FK → ProductionItem.id" },
+        "document_id":        { "type": "string", "description": "FK → ItemDocument.id" },
+        "specification":      { "type": "string" }
+      },
+      "required": ["id", "production_item_id"]
+    },
+
+    "ItemDocument": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.2 Item Document (品目図書) — Technical documentation (drawings, specs, standards) linked to a production item.",
+      "properties": {
+        "production_item_id": { "type": "string", "description": "FK → ProductionItem.id" },
+        "item_group_id":      { "type": "string" },
+        "specification":      { "type": "string" },
+        "value":              { "type": "number" },
+        "unit":               { "type": "string" },
+        "file_ref":           { "type": "string", "format": "uri", "description": "URI reference to attached file (drawing, spec sheet, etc.)" }
+      },
+      "required": ["id", "production_item_id"]
+    },
+
+    "ItemEvent": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.2 Item Event (品目事象) — A recorded fact or incident related to a production item (defect, delay, anomaly).",
+      "properties": {
+        "production_item_id": { "type": "string", "description": "FK → ProductionItem.id" },
+        "fact":               { "type": "string", "description": "Objective description of what occurred" },
+        "issue":              { "type": "string", "description": "Identified problem or improvement target" },
+        "cause":              { "type": "string", "description": "Root cause analysis result" },
+        "value":              { "type": "number" },
+        "unit":               { "type": "string" },
+        "location":           { "type": "string" },
+        "start_datetime":     { "type": "string", "format": "date-time" },
+        "end_datetime":       { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "production_item_id"]
+    },
+
+    "ItemCountermeasure": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.2 Item Countermeasure (品目対策) — Corrective action taken in response to an ItemEvent.",
+      "properties": {
+        "item_event_id":  { "type": "string", "description": "FK → ItemEvent.id" },
+        "personnel_id":   { "type": "string", "description": "FK → Personnel.id — who executed the action" },
+        "sequence":       { "type": "integer" },
+        "countermeasure":  { "type": "string" },
+        "outcome":         { "type": "string" },
+        "value":           { "type": "number" },
+        "unit":            { "type": "string" },
+        "location":        { "type": "string" },
+        "started_at":      { "type": "string", "format": "date-time" },
+        "completed_at":    { "type": "string", "format": "date-time" },
+        "file_ref":        { "type": "string", "format": "uri" }
+      },
+      "required": ["id", "item_event_id"]
+    },
+
+    "Equipment": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.4 Production Equipment (生産設備) — Core BOA entity. A physical asset used in production (machine, robot, jig, tool).",
+      "properties": {
+        "equipment_group_id": { "type": "string", "description": "FK → EquipmentGroup.id" },
+        "document_id":        { "type": "string" },
+        "specification":      { "type": "string" },
+        "unit":               { "type": "string" },
+        "value":              { "type": "number" },
+        "rate":               { "type": "number", "description": "Performance rate" },
+        "standard_capability": { "type": "number", "description": "Rated standard capability" }
+      },
+      "required": ["id"]
+    },
+
+    "EquipmentGroup": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.4 Equipment Group (設備グループ) — Functionally equivalent equipment grouped for alternate selection.",
+      "properties": {
+        "area_id":            { "type": "string", "description": "FK → Area.id" },
+        "specification":      { "type": "string" },
+        "unit":               { "type": "string" },
+        "count":              { "type": "integer", "description": "Number of equipment units in the group" },
+        "rate":               { "type": "number" },
+        "standard_capability": { "type": "number" }
+      }
+    },
+
+    "EquipmentConfiguration": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.4 Equipment Configuration (設備構成) — Parent-child hierarchy of equipment (machine → sub-units).",
+      "properties": {
+        "parent_equipment_id": { "type": "string", "description": "FK → Equipment.id (parent)" },
+        "child_equipment_id":  { "type": "string", "description": "FK → Equipment.id (child)" },
+        "specification":       { "type": "string" },
+        "count":               { "type": "integer" },
+        "unit":                { "type": "string" }
+      },
+      "required": ["id", "parent_equipment_id", "child_equipment_id"]
+    },
+
+    "Personnel": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.5 Personnel (作業者) — A worker involved in production. May be registered at multiple sites.",
+      "properties": {
+        "personnel_group_id": { "type": "string", "description": "FK → PersonnelGroup.id" },
+        "specification":      { "type": "string" },
+        "unit":               { "type": "string" },
+        "value":              { "type": "number" },
+        "rate":               { "type": "number" },
+        "standard_capability": { "type": "number" }
+      }
+    },
+
+    "PersonnelGroup": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.5 Personnel Group (作業者グループ) — A work team (e.g., shift crew, maintenance team).",
+      "properties": {
+        "area_id":       { "type": "string", "description": "FK → Area.id" },
+        "specification": { "type": "string" },
+        "unit":          { "type": "string" },
+        "count":         { "type": "integer" },
+        "rate":          { "type": "number" },
+        "standard_capability": { "type": "number" }
+      }
+    },
+
+    "PersonnelSkill": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.5 Personnel Skill (作業者スキル) — Certified skill or competency of a worker.",
+      "properties": {
+        "personnel_id":   { "type": "string", "description": "FK → Personnel.id" },
+        "specification":  { "type": "string", "description": "Skill description" },
+        "level":          { "type": "string", "description": "Proficiency level" },
+        "certified_at":   { "type": "string", "format": "date-time" },
+        "expires_at":     { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "personnel_id"]
+    },
+
+    "ProductionProcess": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.6 Production Process (生産工程) — Core BOP entity. A technically defined production process applicable to an item group. Includes inspection.",
+      "properties": {
+        "item_group_id":  { "type": "string", "description": "FK → ItemGroup.id — all items in this group are produced by this process" },
+        "specification":  { "type": "string" },
+        "unit":           { "type": "string" },
+        "value":          { "type": "number", "description": "Capacity or baseline metric for the process" }
+      },
+      "required": ["id"]
+    },
+
+    "ProductionStep": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.6 Production Step (生産手順) — An instantiation of a ProductionProcess for a specific item, with assigned equipment, line, and personnel. One step maps to one process.",
+      "properties": {
+        "production_process_id":  { "type": "string", "description": "FK → ProductionProcess.id" },
+        "equipment_group_id":     { "type": "string", "description": "FK → EquipmentGroup.id — actual equipment selected from this group" },
+        "production_line_id":     { "type": "string", "description": "FK → ProductionLine.id" },
+        "personnel_group_id":     { "type": "string", "description": "FK → PersonnelGroup.id" },
+        "sequence":               { "type": "string", "description": "Ordering index within the process" },
+        "specification":          { "type": "string" },
+        "value":                  { "type": "number" },
+        "unit":                   { "type": "string" },
+        "production_leadtime":    { "type": "number", "description": "Required production time (man-hours or machine-hours)" },
+        "days_to_finish":         { "type": "number", "description": "Calendar days required, counted backwards from process completion" }
+      },
+      "required": ["id", "production_process_id"]
+    },
+
+    "OperationItem": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.6 Operation Item (生産項目) — Detailed work content within a ProductionStep (inspection points, quality checks, tool operations).",
+      "properties": {
+        "production_step_id":    { "type": "string", "description": "FK → ProductionStep.id (for production work)" },
+        "equipment_step_id":     { "type": "string", "description": "FK (for equipment-related work)" },
+        "item_part_id":          { "type": "string", "description": "FK → ItemPart.id" },
+        "equipment_part_id":     { "type": "string", "description": "FK (equipment sub-part)" },
+        "tool_id":               { "type": "string", "description": "FK — jig/tool/fixture used" },
+        "specification":         { "type": "string" },
+        "unit":                  { "type": "string" },
+        "value":                 { "type": "number" }
+      },
+      "required": ["id"]
+    },
+
+    "ProcessCategoryDeployment": {
+      "type": "object",
+      "description": "§8.7 Process Category Deployment (工程カテゴリ展開) — Cross-reference between process entities.",
+      "properties": {
+        "id":                    { "type": "string" },
+        "production_process_id": { "type": "string", "description": "FK → ProductionProcess.id" },
+        "related_entity_type":   { "type": "string" },
+        "related_entity_id":     { "type": "string" },
+        "note":                  { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "ProductionOrder": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Order (生産オーダ) — A demand signal to produce a quantity of a specific item.",
+      "properties": {
+        "production_item_id":    { "type": "string", "description": "FK → ProductionItem.id" },
+        "sales_order_detail_id": { "type": "string", "description": "FK — link to customer order if order-driven" },
+        "production_process_id": { "type": "string", "description": "FK → ProductionProcess.id" },
+        "specification":         { "type": "string" },
+        "quantity":              { "type": "number" },
+        "unit":                  { "type": "string" },
+        "location":              { "type": "string" },
+        "actual_quantity":       { "type": "number" },
+        "issued_at":             { "type": "string", "format": "date-time" },
+        "start_datetime":        { "type": "string", "format": "date-time" },
+        "end_datetime":          { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "production_item_id"]
+    },
+
+    "ProductionSchedule": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Schedule (生産指示) — Dispatches a specific ProductionStep at a specific time, with assigned equipment and operator.",
+      "properties": {
+        "production_order_id":   { "type": "string", "description": "FK → ProductionOrder.id" },
+        "production_step_id":    { "type": "string", "description": "FK → ProductionStep.id" },
+        "equipment_id":          { "type": "string", "description": "FK → Equipment.id" },
+        "personnel_id":          { "type": "string", "description": "FK → Personnel.id" },
+        "sequence":              { "type": "string" },
+        "quantity":              { "type": "number" },
+        "unit":                  { "type": "string" },
+        "specification":         { "type": "string" },
+        "actual_quantity":       { "type": "number" },
+        "start_datetime":        { "type": "string", "format": "date-time" },
+        "end_datetime":          { "type": "string", "format": "date-time" },
+        "actual_start":          { "type": "string", "format": "date-time" },
+        "actual_end":            { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "production_order_id", "production_step_id"]
+    },
+
+    "ProductionResult": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Result (生産結果) — Outcome of a production order execution.",
+      "properties": {
+        "production_order_id":   { "type": "string", "description": "FK → ProductionOrder.id" },
+        "batch_id":              { "type": "string", "description": "Batch or lot identifier of the produced output" },
+        "specification":         { "type": "string" },
+        "quantity":              { "type": "number" },
+        "unit":                  { "type": "string" },
+        "location":              { "type": "string" },
+        "completed_at":          { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "production_order_id"]
+    },
+
+    "ProductionRecord": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Record (生産実績) — Detailed actual performance data per production schedule entry.",
+      "properties": {
+        "production_schedule_id": { "type": "string", "description": "FK → ProductionSchedule.id" },
+        "equipment_id":           { "type": "string", "description": "FK → Equipment.id" },
+        "personnel_id":           { "type": "string", "description": "FK → Personnel.id" },
+        "specification":          { "type": "string" },
+        "quantity":               { "type": "number" },
+        "unit":                   { "type": "string" },
+        "actual_start":           { "type": "string", "format": "date-time" },
+        "actual_end":             { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "production_schedule_id"]
+    },
+
+    "ProductionPlan": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Plan (生産計画) — Aggregated production plan over a planning horizon.",
+      "properties": {
+        "production_item_id": { "type": "string", "description": "FK → ProductionItem.id" },
+        "term_id":            { "type": "string", "description": "FK → Term.id" },
+        "specification":      { "type": "string" },
+        "quantity":           { "type": "number" },
+        "unit":               { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "ProductionCapacity": {
+      "allOf": [{ "$ref": "#/$defs/BaseEntity" }],
+      "type": "object",
+      "description": "§8.8 Production Capacity (生産能力) — Available capacity of a process or line within a time term.",
+      "properties": {
+        "production_process_id": { "type": "string", "description": "FK → ProductionProcess.id" },
+        "term_id":               { "type": "string", "description": "FK → Term.id" },
+        "specification":         { "type": "string" },
+        "quantity":              { "type": "number" },
+        "unit":                  { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "FunctionModel": {
+      "type": "object",
+      "description": "§10.1 Function Model profile entry — describes a stakeholder's business function mapped to the LPLM standard model.",
+      "properties": {
+        "id":             { "type": "string" },
+        "category":       { "type": "string", "description": "Function category (from LPLM Ch.6)" },
+        "group_name":     { "type": "string", "description": "Function group (from LPLM Ch.6)" },
+        "name":           { "type": "string" },
+        "description":    { "type": "string" },
+        "stakeholder_id": { "type": "string" },
+        "created_at":     { "type": "string", "format": "date-time" },
+        "updated_at":     { "type": "string", "format": "date-time" },
+        "status":         { "type": "string" },
+        "note":           { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "InformationModel": {
+      "type": "object",
+      "description": "§10.1 Information Model profile entry.",
+      "properties": {
+        "id":             { "type": "string" },
+        "category":       { "type": "string" },
+        "group_name":     { "type": "string" },
+        "name":           { "type": "string" },
+        "description":    { "type": "string" },
+        "stakeholder_id": { "type": "string" },
+        "created_at":     { "type": "string", "format": "date-time" },
+        "updated_at":     { "type": "string", "format": "date-time" },
+        "status":         { "type": "string" },
+        "note":           { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "InformationItem": {
+      "type": "object",
+      "description": "§10.1 Information Item — a data element within an Information Model.",
+      "properties": {
+        "id":                   { "type": "string" },
+        "information_model_id": { "type": "string", "description": "FK → InformationModel.id" },
+        "name":                 { "type": "string" },
+        "description":          { "type": "string" },
+        "note":                 { "type": "string" }
+      },
+      "required": ["id", "information_model_id"]
+    },
+
+    "DataModel": {
+      "type": "object",
+      "description": "§10.1 Data Model profile entry.",
+      "properties": {
+        "id":             { "type": "string" },
+        "category":       { "type": "string" },
+        "group_name":     { "type": "string" },
+        "name":           { "type": "string" },
+        "description":    { "type": "string" },
+        "stakeholder_id": { "type": "string" },
+        "created_at":     { "type": "string", "format": "date-time" },
+        "updated_at":     { "type": "string", "format": "date-time" },
+        "status":         { "type": "string" },
+        "note":           { "type": "string" }
+      },
+      "required": ["id"]
+    },
+
+    "DataAttribute": {
+      "type": "object",
+      "description": "§10.1 Data Attribute — a field within a Data Model.",
+      "properties": {
+        "id":            { "type": "string" },
+        "data_model_id": { "type": "string", "description": "FK → DataModel.id" },
+        "name":          { "type": "string" },
+        "data_type":     { "type": "string", "description": "Recommended data type (string, number, datetime, etc.)" },
+        "description":   { "type": "string" },
+        "note":          { "type": "string" }
+      },
+      "required": ["id", "data_model_id"]
+    },
+
+    "FunctionInfoDeployment": {
+      "type": "object",
+      "description": "§10.2 Function-Information Deployment — links a function model to the information it consumes/produces.",
+      "properties": {
+        "id":                   { "type": "string" },
+        "function_model_id":    { "type": "string", "description": "FK → FunctionModel.id" },
+        "information_model_id": { "type": "string", "description": "FK → InformationModel.id" },
+        "note":                 { "type": "string" }
+      },
+      "required": ["id", "function_model_id", "information_model_id"]
+    },
+
+    "InfoDataDeployment": {
+      "type": "object",
+      "description": "§10.2 Information-Data Deployment — links an information model to its implementing data model(s).",
+      "properties": {
+        "id":                   { "type": "string" },
+        "information_model_id": { "type": "string", "description": "FK → InformationModel.id" },
+        "data_model_id":        { "type": "string", "description": "FK → DataModel.id" },
+        "note":                 { "type": "string" }
+      },
+      "required": ["id", "information_model_id", "data_model_id"]
+    },
+
+    "AttributeItemDeployment": {
+      "type": "object",
+      "description": "§10.2 Attribute-Item Deployment — maps an information item to a data attribute.",
+      "properties": {
+        "id":                   { "type": "string" },
+        "information_item_id":  { "type": "string", "description": "FK → InformationItem.id" },
+        "data_attribute_id":    { "type": "string", "description": "FK → DataAttribute.id" },
+        "note":                 { "type": "string" }
+      },
+      "required": ["id", "information_item_id", "data_attribute_id"]
+    },
+
+    "MappingType": {
+      "type": "string",
+      "description": "Mapping classification for model-level mapping (§10.3).",
+      "enum": ["conformant", "extended", "similar", "new", "out_of_scope"]
+    },
+
+    "ItemMappingType": {
+      "type": "string",
+      "description": "Mapping classification for item/attribute-level mapping (§10.3).",
+      "enum": ["equivalent", "transform", "split", "merge"]
+    },
+
+    "ModelMapping": {
+      "type": "object",
+      "description": "§10.3 Model Mapping — maps an AS-IS model to a TO-BE model via the LPLM standard model. Applicable to function, information, and data models.",
+      "properties": {
+        "id":                { "type": "string" },
+        "scope":             { "type": "string", "enum": ["function", "information", "data"] },
+        "as_is_model_id":    { "type": "string", "description": "FK → stakeholder's AS-IS model ID" },
+        "to_be_model_id":    { "type": "string", "description": "FK → TO-BE model ID (interop profile)" },
+        "standard_model_id": { "type": "string", "description": "FK → LPLM standard model ID" },
+        "mapping_type":      { "$ref": "#/$defs/MappingType" },
+        "note":              { "type": "string" }
+      },
+      "required": ["id", "scope", "mapping_type"]
+    },
+
+    "ElementMapping": {
+      "type": "object",
+      "description": "§10.3 Element Mapping — maps AS-IS information items or data attributes to their TO-BE counterparts.",
+      "properties": {
+        "id":                 { "type": "string" },
+        "scope":              { "type": "string", "enum": ["information_item", "data_attribute"] },
+        "as_is_model_id":     { "type": "string" },
+        "as_is_element_id":   { "type": "string" },
+        "to_be_model_id":     { "type": "string" },
+        "to_be_element_id":   { "type": "string" },
+        "mapping_type":       { "$ref": "#/$defs/ItemMappingType" },
+        "note":               { "type": "string" }
+      },
+      "required": ["id", "scope", "mapping_type"]
+    },
+
+    "DataLink": {
+      "type": "object",
+      "description": "§10.4 Data Link (データモデル連結) — Defines a JOIN relationship between two data models (equivalent to SQL JOIN).",
+      "properties": {
+        "id":              { "type": "string" },
+        "scope":           { "type": "string", "enum": ["as_is", "to_be", "standard", "extended"] },
+        "target_model_id": { "type": "string", "description": "The model that receives/references data" },
+        "linked_model_id": { "type": "string", "description": "The model that provides data" },
+        "link_type":       { "type": "string", "enum": ["static_join", "dynamic_copy"], "description": "Static reference vs. data replication" },
+        "join_key":        { "type": "string", "description": "Join condition expressed as text (e.g., 'target.item_id = linked.id')" },
+        "note":            { "type": "string" }
+      },
+      "required": ["id", "target_model_id", "linked_model_id"]
+    },
+
+    "DataCalculation": {
+      "type": "object",
+      "description": "§10.4 Data Calculation (演算ロジック) — Defines a computation formula for deriving a target attribute's value.",
+      "properties": {
+        "id":                  { "type": "string" },
+        "target_attribute_id": { "type": "string", "description": "FK → DataAttribute.id (the attribute whose value is computed)" },
+        "source_model_id":     { "type": "string", "description": "FK → DataModel.id (source of input values)" },
+        "expression":          { "type": "string", "description": "Calculation expression (e.g., 'SUM(source.quantity * source.rate)')" },
+        "note":                { "type": "string" }
+      },
+      "required": ["id", "target_attribute_id", "expression"]
+    },
+
+    "DataCalculationLink": {
+      "type": "object",
+      "description": "§10.4 Data Calculation Link — connects a calculation to additional source models via DataLink.",
+      "properties": {
+        "id":                  { "type": "string" },
+        "data_calculation_id": { "type": "string", "description": "FK → DataCalculation.id" },
+        "data_link_id":        { "type": "string", "description": "FK → DataLink.id" }
+      },
+      "required": ["id", "data_calculation_id", "data_link_id"]
+    },
+
+    "KPIAssessment": {
+      "type": "object",
+      "description": "§10.5 KPI Assessment — Quantitative interoperability metrics for a stakeholder's data profile (conformity, sufficiency, reliability).",
+      "properties": {
+        "id":               { "type": "string" },
+        "stakeholder_id":   { "type": "string" },
+        "direction":        { "type": "string", "enum": ["push", "pull"], "description": "Data flow direction being assessed" },
+        "data_conformity":  { "type": "number", "minimum": 0, "maximum": 1, "description": "Ratio of AS-IS models with valid TO-BE mappings (§10.5)" },
+        "data_sufficiency": { "type": "number", "minimum": 0, "maximum": 1, "description": "Ratio of attributes deliverable in a single transaction (§10.5)" },
+        "data_reliability": { "type": "number", "minimum": 0, "maximum": 1, "description": "Ratio of attributes with computable values from source models (§10.5)" },
+        "assessed_at":      { "type": "string", "format": "date-time" },
+        "note":             { "type": "string" }
+      },
+      "required": ["id", "stakeholder_id", "direction"]
+    }
+  }
+}

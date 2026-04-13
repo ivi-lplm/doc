@@ -1,0 +1,641 @@
+openapi: "3.1.0"
+info:
+  title: IVI Lean PLM — Interoperability API
+  version: "1.1.0-draft"
+  description: |
+    RESTful API specification for the IVI Lean Product Lifecycle Management (LPLM)
+    Technical Specification v1.0 (Public Review R1, March 2026).
+
+    **v1.1-draft changes:** Added security scheme (API key); added response examples
+    for key entities (ProductionItem, ProductionOrder, Equipment) to support
+    Hannover Messe 2026 live demo with Swagger UI / Redoc.
+
+    This API enables interoperable data exchange between manufacturing stakeholders
+    by providing standardised endpoints for the LPLM data model entities defined in
+    Chapters 8–10 of the specification.
+
+    **Entity groups:**
+    - **Enterprise hierarchy** (Company → Site → Area → ProductionLine) — §8.1, aligned with IEC 62264
+    - **Production Items (BOM)** — §8.3
+    - **Equipment (BOA)** — §8.4
+    - **Personnel** — §8.5
+    - **Production Process (BOP)** — §8.6
+    - **Planning & Execution** — §8.8
+    - **Interoperability Profile** — §10.1–10.5
+
+    Reference: https://iv-i.org
+  contact:
+    name: Industrial Value Chain Initiative (IVI)
+    url: https://iv-i.org
+  license:
+    name: IVI Specification License
+    url: https://iv-i.org/license
+
+servers:
+  - url: https://api.example.com/lplm/v1
+    description: Reference implementation endpoint (placeholder)
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Enterprise
+    description: Enterprise hierarchy (Company, Site, Area, Line) — §8.1
+  - name: BOM
+    description: Production Items and Bill of Materials — §8.3
+  - name: BOA
+    description: Production Equipment and Bill of Assets — §8.4
+  - name: Personnel
+    description: Workers and skill management — §8.5
+  - name: BOP
+    description: Production Processes (Bill of Process) — §8.6
+  - name: Execution
+    description: Production orders, schedules, results, and records — §8.8
+  - name: Profile
+    description: Interoperability profile models and mappings — §10
+
+paths:
+
+
+
+  # ── Enterprise Hierarchy ──────────────────────────────────
+
+  /companies:
+    get:
+      tags: [Enterprise]
+      summary: List all companies
+      operationId: listCompanies
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+      responses:
+        "200":
+          description: Paginated list of companies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  /companies/{id}:
+    get:
+      tags: [Enterprise]
+      summary: Get a company by ID
+      operationId: getCompany
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Company object
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/Company"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /sites:
+    get:
+      tags: [Enterprise]
+      summary: List sites (optionally filter by company)
+      operationId: listSites
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: company_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of sites
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  /areas:
+    get:
+      tags: [Enterprise]
+      summary: List areas (optionally filter by site)
+      operationId: listAreas
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: site_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of areas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  /production-lines:
+    get:
+      tags: [Enterprise]
+      summary: List production lines (optionally filter by area)
+      operationId: listProductionLines
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: area_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of production lines
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  # ── Production Items (BOM) ────────────────────────────────
+
+  /production-items:
+    get:
+      tags: [BOM]
+      summary: List production items
+      operationId: listProductionItems
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: item_group_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of production items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+    post:
+      tags: [BOM]
+      summary: Create a production item
+      operationId: createProductionItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "lplm-schema.json#/$defs/ProductionItem"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/ProductionItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /production-items/{id}:
+    get:
+      tags: [BOM]
+      summary: Get a production item by ID
+      operationId: getProductionItem
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Production item object
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/ProductionItem"
+              example:
+                id: "ITEM-EV-MOTOR-001"
+                name: "EV Drive Motor Assembly"
+                semanticId: "https://iv-i.org/lplm/v1/vocab/ProductionItem"
+                classification: "assembly"
+                status: "active"
+                item_group_id: "GRP-POWERTRAIN"
+                serial_number: "SN-2026-HM-00042"
+                batch_id: "LOT-2026-Q2-017"
+                specification: "Permanent magnet synchronous motor, 150kW rated output"
+                unit: "PCE"
+                value: 1
+                registered_at: "2026-01-15T09:00:00Z"
+                updated_at: "2026-04-01T14:30:00Z"
+                created_by: "tanaka.k"
+                note: "Hannover Messe 2026 reference item"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [BOM]
+      summary: Update a production item
+      operationId: updateProductionItem
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "lplm-schema.json#/$defs/ProductionItem"
+      responses:
+        "200":
+          description: Updated
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [BOM]
+      summary: Delete a production item
+      operationId: deleteProductionItem
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /production-items/{id}/configurations:
+    get:
+      tags: [BOM]
+      summary: Get BOM structure (child items) for a production item
+      operationId: getItemConfigurations
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: List of child item configurations (BOM explosion)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/ItemConfiguration"
+
+  # ── Equipment (BOA) ───────────────────────────────────────
+
+  /equipment:
+    get:
+      tags: [BOA]
+      summary: List equipment
+      operationId: listEquipment
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: equipment_group_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of equipment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  /equipment/{id}:
+    get:
+      tags: [BOA]
+      summary: Get equipment by ID
+      operationId: getEquipment
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Equipment object
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/Equipment"
+              example:
+                id: "EQP-CNC-LATHE-003"
+                name: "CNC Turning Center TC-500"
+                semanticId: "https://iv-i.org/lplm/v1/vocab/Equipment"
+                classification: "cnc_lathe"
+                status: "active"
+                equipment_group_id: "EGRP-MACHINING-A"
+                specification: "5-axis CNC lathe, max turning diameter 500mm"
+                unit: "PCE"
+                value: 1
+                rate: 0.92
+                standard_capability: 480
+                registered_at: "2025-06-01T08:00:00Z"
+                note: "Assigned to Area-A machining shop"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /equipment/{id}/configurations:
+    get:
+      tags: [BOA]
+      summary: Get equipment sub-structure (child equipment)
+      operationId: getEquipmentConfigurations
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: List of child equipment (BOA hierarchy)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/EquipmentConfiguration"
+
+  # ── Production Process (BOP) ──────────────────────────────
+
+  /production-processes:
+    get:
+      tags: [BOP]
+      summary: List production processes
+      operationId: listProductionProcesses
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: item_group_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of production processes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+
+  /production-processes/{id}:
+    get:
+      tags: [BOP]
+      summary: Get a production process by ID
+      operationId: getProductionProcess
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Production process object
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/ProductionProcess"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /production-processes/{id}/steps:
+    get:
+      tags: [BOP]
+      summary: Get production steps for a process (BOP explosion with equipment/personnel assignments)
+      operationId: getProductionSteps
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: Ordered list of production steps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/ProductionStep"
+
+  /production-steps/{id}/operation-items:
+    get:
+      tags: [BOP]
+      summary: Get detailed operation items within a production step
+      operationId: getOperationItems
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: List of operation items (work instructions, inspection points)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/OperationItem"
+
+  # ── Execution ─────────────────────────────────────────────
+
+  /production-orders:
+    get:
+      tags: [Execution]
+      summary: List production orders
+      operationId: listProductionOrders
+      parameters:
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - name: production_item_id
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated list of production orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+    post:
+      tags: [Execution]
+      summary: Create a production order
+      operationId: createProductionOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "lplm-schema.json#/$defs/ProductionOrder"
+            example:
+              id: "ORD-2026-HM-001"
+              name: "Hannover Messe Live Demo Order"
+              status: "active"
+              production_item_id: "ITEM-EV-MOTOR-001"
+              production_process_id: "PROC-MOTOR-ASSY-01"
+              quantity: 100
+              unit: "PCE"
+              location: "Site-Nagoya-A1"
+              issued_at: "2026-04-14T09:00:00Z"
+              start_datetime: "2026-04-15T08:00:00Z"
+              end_datetime: "2026-04-18T17:00:00Z"
+              note: "Hannover Messe 2026 Live Demo Order"
+      responses:
+        "201":
+          description: Created
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /production-orders/{id}/schedules:
+    get:
+      tags: [Execution]
+      summary: Get dispatched schedules for an order
+      operationId: getProductionSchedules
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: List of production schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/ProductionSchedule"
+
+  /production-orders/{id}/results:
+    get:
+      tags: [Execution]
+      summary: Get production results for an order
+      operationId: getProductionResults
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+      responses:
+        "200":
+          description: List of production results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/ProductionResult"
+
+  # ── Interoperability Profile ──────────────────────────────
+
+  /profiles/models:
+    get:
+      tags: [Profile]
+      summary: List all model definitions (function, information, data) in a stakeholder profile
+      operationId: listProfileModels
+      parameters:
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [function, information, data]
+        - name: stakeholder_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of profile model entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "lplm-schema.json#/$defs/FunctionModel"
+                    - $ref: "lplm-schema.json#/$defs/InformationModel"
+                    - $ref: "lplm-schema.json#/$defs/DataModel"
+
+  /profiles/mappings:
+    get:
+      tags: [Profile]
+      summary: List model mappings (AS-IS to TO-BE via standard model)
+      operationId: listModelMappings
+      parameters:
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [function, information, data]
+        - name: stakeholder_id
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: List of model mappings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "lplm-schema.json#/$defs/ModelMapping"
+
+  /profiles/kpi:
+    get:
+      tags: [Profile]
+      summary: Get interoperability KPI assessment for a stakeholder
+      operationId: getKPIAssessment
+      parameters:
+        - name: stakeholder_id
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: KPI assessment (conformity, sufficiency, reliability)
+          content:
+            application/json:
+              schema:
+                $ref: "lplm-schema.json#/$defs/KPIAssessment"
+
+components:
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: |
+        API key authentication. For production deployments integrated with
+        Eclipse Dataspace Connector (EDC), this header may carry a
+        connector-issued token. Placeholder for demonstration purposes.
+
+  parameters:
+    idParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    limitParam:
+      name: limit
+      in: query
+      description: Maximum number of results (default 50, max 500)
+      schema:
+        type: integer
+        default: 50
+        maximum: 500
+    offsetParam:
+      name: offset
+      in: query
+      description: Pagination offset
+      schema:
+        type: integer
+        default: 0
+
+  schemas:
+    PaginatedResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of matching records
+        limit:
+          type: integer
+        offset:
+          type: integer
+        items:
+          type: array
+          items: {}
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        detail:
+          type: string
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    BadRequest:
+      description: Invalid request body or parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
