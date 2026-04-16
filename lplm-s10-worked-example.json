@@ -1,0 +1,362 @@
+{
+  "$schema": "https://iv-i.org/lplm/v1/schema.json",
+  "_meta": {
+    "title": "LPLM §10 Worked Example — Interoperability Profile",
+    "scenario": "Japanese Tier-2 precision machining supplier (Yamamoto Seiki Co., Ltd.) connecting to a German OEM's Catena-X BOM-as-built data space",
+    "purpose": "Demonstrates the AS-IS → LPLM Standard → TO-BE mapping methodology with quantitative KPI assessment",
+    "version": "1.0",
+    "date": "2026-04-11",
+    "prepared_for": "Hannover Messe 2026 — IVI/CIOF demonstration"
+  },
+
+  "step1_as_is_profile": {
+    "_description": "Step 1: AS-IS Profile — The supplier's current data model as extracted from their production management system (Excel + Access DB). Field names are in Japanese; units are non-standard; IDs are local sequential numbers.",
+
+    "function_models": [
+      {
+        "id": "FM-ASIS-001",
+        "category": "Production Management",
+        "group_name": "BOM Management",
+        "name": "部品表管理 (BOM Management)",
+        "description": "Manages parent-child relationships of manufactured and procured parts",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      },
+      {
+        "id": "FM-ASIS-002",
+        "category": "Production Management",
+        "group_name": "Production Results",
+        "name": "生産実績管理 (Production Results Management)",
+        "description": "Records actual production quantities, dates, and lot information",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      }
+    ],
+
+    "information_models": [
+      {
+        "id": "IM-ASIS-001",
+        "category": "BOM",
+        "group_name": "Parts Master",
+        "name": "品番マスタ (Parts Master)",
+        "description": "Master data for all parts managed by the supplier",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      },
+      {
+        "id": "IM-ASIS-002",
+        "category": "Production",
+        "group_name": "Lot Record",
+        "name": "ロット実績 (Lot Record)",
+        "description": "Production lot records with traceability information",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      }
+    ],
+
+    "data_models": [
+      {
+        "id": "DM-ASIS-001",
+        "category": "BOM",
+        "group_name": "Parts Master",
+        "name": "T_品番マスタ (t_hinban_master)",
+        "description": "Access DB table: parts master with Japanese field names",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      },
+      {
+        "id": "DM-ASIS-002",
+        "category": "Production",
+        "group_name": "Lot Record",
+        "name": "T_ロット実績 (t_lot_jisseki)",
+        "description": "Access DB table: lot-level production results",
+        "stakeholder_id": "SH-YAMAMOTO",
+        "status": "active"
+      }
+    ],
+
+    "data_attributes": [
+      { "id": "DA-ASIS-001", "data_model_id": "DM-ASIS-001", "name": "品番", "data_type": "string", "description": "Part number (internal code, e.g. 'YS-A1234')" },
+      { "id": "DA-ASIS-002", "data_model_id": "DM-ASIS-001", "name": "品名", "data_type": "string", "description": "Part name in Japanese" },
+      { "id": "DA-ASIS-003", "data_model_id": "DM-ASIS-001", "name": "親品番", "data_type": "string", "description": "Parent part number (BOM relationship)" },
+      { "id": "DA-ASIS-004", "data_model_id": "DM-ASIS-001", "name": "員数", "data_type": "number", "description": "Quantity per parent (BOM quantity)" },
+      { "id": "DA-ASIS-005", "data_model_id": "DM-ASIS-001", "name": "単位", "data_type": "string", "description": "Unit (free text: '個', 'kg', 'ｍ')" },
+      { "id": "DA-ASIS-006", "data_model_id": "DM-ASIS-001", "name": "材質", "data_type": "string", "description": "Material specification" },
+      { "id": "DA-ASIS-007", "data_model_id": "DM-ASIS-001", "name": "単重", "data_type": "number", "description": "Unit weight in grams" },
+      { "id": "DA-ASIS-010", "data_model_id": "DM-ASIS-002", "name": "ロット番号", "data_type": "string", "description": "Lot number (e.g. 'L2026-0415-A')" },
+      { "id": "DA-ASIS-011", "data_model_id": "DM-ASIS-002", "name": "品番", "data_type": "string", "description": "Part number (FK to parts master)" },
+      { "id": "DA-ASIS-012", "data_model_id": "DM-ASIS-002", "name": "生産数", "data_type": "number", "description": "Produced quantity" },
+      { "id": "DA-ASIS-013", "data_model_id": "DM-ASIS-002", "name": "生産日", "data_type": "string", "description": "Production date (YYYY/MM/DD format, stored as text)" },
+      { "id": "DA-ASIS-014", "data_model_id": "DM-ASIS-002", "name": "検査結果", "data_type": "string", "description": "Inspection result ('合格' / '不合格')" },
+      { "id": "DA-ASIS-015", "data_model_id": "DM-ASIS-002", "name": "作業者名", "data_type": "string", "description": "Operator name (free text)" }
+    ]
+  },
+
+  "step2_to_be_profile": {
+    "_description": "Step 2: TO-BE Profile — Catena-X BOM-as-built Aspect Model (v3.0.0) expressed in the LPLM §10 framework. This represents the target data model required by the German OEM.",
+
+    "information_models": [
+      {
+        "id": "IM-TOBE-001",
+        "category": "BOM",
+        "group_name": "SingleLevelBomAsBuilt",
+        "name": "SingleLevelBomAsBuilt",
+        "description": "Catena-X Aspect Model: single-level BOM representing one manufacturing step",
+        "stakeholder_id": "SH-GERMAN-OEM",
+        "status": "active"
+      }
+    ],
+
+    "data_models": [
+      {
+        "id": "DM-TOBE-001",
+        "category": "BOM",
+        "group_name": "SingleLevelBomAsBuilt",
+        "name": "SingleLevelBomAsBuilt (SAMM)",
+        "description": "Catena-X SAMM Aspect Model for BOM-as-built",
+        "stakeholder_id": "SH-GERMAN-OEM",
+        "status": "active"
+      }
+    ],
+
+    "data_attributes": [
+      { "id": "DA-TOBE-001", "data_model_id": "DM-TOBE-001", "name": "catenaXId", "data_type": "string", "description": "Catena-X unique ID (UUIDv4 URN)" },
+      { "id": "DA-TOBE-002", "data_model_id": "DM-TOBE-001", "name": "childParts[].childCatenaXId", "data_type": "string", "description": "Child part Catena-X ID" },
+      { "id": "DA-TOBE-003", "data_model_id": "DM-TOBE-001", "name": "childParts[].quantity.value", "data_type": "number", "description": "Quantity of child part" },
+      { "id": "DA-TOBE-004", "data_model_id": "DM-TOBE-001", "name": "childParts[].quantity.unit", "data_type": "string", "description": "Unit (UNECE Rec 20 code)" },
+      { "id": "DA-TOBE-005", "data_model_id": "DM-TOBE-001", "name": "childParts[].createdOn", "data_type": "datetime", "description": "Timestamp of BOM relationship creation" },
+      { "id": "DA-TOBE-006", "data_model_id": "DM-TOBE-001", "name": "childParts[].lastModifiedOn", "data_type": "datetime", "description": "Timestamp of last modification" },
+      { "id": "DA-TOBE-007", "data_model_id": "DM-TOBE-001", "name": "childParts[].businessPartner", "data_type": "string", "description": "BPNL of manufacturing partner" },
+      { "id": "DA-TOBE-008", "data_model_id": "DM-TOBE-001", "name": "childParts[].hasAlternatives", "data_type": "boolean", "description": "Whether alternative parts exist" }
+    ]
+  },
+
+  "step3_mappings": {
+    "_description": "Step 3: Model Mapping (AS-IS → LPLM Standard → TO-BE) and Element Mapping at attribute level",
+
+    "model_mappings": [
+      {
+        "id": "MM-001",
+        "scope": "data",
+        "as_is_model_id": "DM-ASIS-001",
+        "standard_model_id": "LPLM-ProductionItem",
+        "to_be_model_id": "DM-TOBE-001",
+        "mapping_type": "conformant",
+        "note": "AS-IS parts master maps to LPLM ProductionItem, which maps to Catena-X BOM-as-built parent entity"
+      },
+      {
+        "id": "MM-002",
+        "scope": "data",
+        "as_is_model_id": "DM-ASIS-001",
+        "standard_model_id": "LPLM-ItemConfiguration",
+        "to_be_model_id": "DM-TOBE-001",
+        "mapping_type": "conformant",
+        "note": "AS-IS parent-child relationship (親品番→品番) maps to LPLM ItemConfiguration, then to Catena-X childParts[]"
+      },
+      {
+        "id": "MM-003",
+        "scope": "data",
+        "as_is_model_id": "DM-ASIS-002",
+        "standard_model_id": "LPLM-ProductionResult",
+        "to_be_model_id": null,
+        "mapping_type": "extended",
+        "note": "AS-IS lot record maps to LPLM ProductionResult but has no direct counterpart in BOM-as-built (production data, not BOM structure)"
+      }
+    ],
+
+    "element_mappings": [
+      {
+        "id": "EM-001",
+        "scope": "data_attribute",
+        "as_is_model_id": "DM-ASIS-001", "as_is_element_id": "DA-ASIS-001",
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-001",
+        "mapping_type": "transform",
+        "note": "品番 (YS-A1234) → catenaXId (urn:uuid:...) — requires ID translation registry"
+      },
+      {
+        "id": "EM-002",
+        "scope": "data_attribute",
+        "as_is_model_id": "DM-ASIS-001", "as_is_element_id": "DA-ASIS-003",
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-002",
+        "mapping_type": "transform",
+        "note": "親品番 → childParts[].childCatenaXId — same ID translation needed"
+      },
+      {
+        "id": "EM-003",
+        "scope": "data_attribute",
+        "as_is_model_id": "DM-ASIS-001", "as_is_element_id": "DA-ASIS-004",
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-003",
+        "mapping_type": "equivalent",
+        "note": "員数 → quantity.value — direct numeric mapping"
+      },
+      {
+        "id": "EM-004",
+        "scope": "data_attribute",
+        "as_is_model_id": "DM-ASIS-001", "as_is_element_id": "DA-ASIS-005",
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-004",
+        "mapping_type": "transform",
+        "note": "単位 ('個') → unit ('PCE') — requires UNECE Rec 20 code mapping table"
+      },
+      {
+        "id": "EM-005",
+        "scope": "data_attribute",
+        "as_is_model_id": null, "as_is_element_id": null,
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-005",
+        "mapping_type": "transform",
+        "note": "createdOn — no direct AS-IS source; derivable from 生産日 with format conversion (YYYY/MM/DD → ISO 8601)"
+      },
+      {
+        "id": "EM-006",
+        "scope": "data_attribute",
+        "as_is_model_id": null, "as_is_element_id": null,
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-007",
+        "mapping_type": "transform",
+        "note": "businessPartner (BPNL) — not in AS-IS; must be assigned via Catena-X onboarding"
+      },
+      {
+        "id": "EM-007",
+        "scope": "data_attribute",
+        "as_is_model_id": null, "as_is_element_id": null,
+        "to_be_model_id": "DM-TOBE-001", "to_be_element_id": "DA-TOBE-008",
+        "mapping_type": "transform",
+        "note": "hasAlternatives — not in AS-IS; default to false, requires business process decision"
+      }
+    ]
+  },
+
+  "step4_data_logic": {
+    "_description": "Step 4: DataLink and DataCalculation — defines JOIN conditions and derived value computation",
+
+    "data_links": [
+      {
+        "id": "DL-001",
+        "scope": "as_is",
+        "target_model_id": "DM-ASIS-002",
+        "linked_model_id": "DM-ASIS-001",
+        "link_type": "static_join",
+        "join_key": "DM-ASIS-002.品番 = DM-ASIS-001.品番",
+        "note": "Join lot records to parts master to obtain material spec and unit weight"
+      },
+      {
+        "id": "DL-002",
+        "scope": "extended",
+        "target_model_id": "DM-TOBE-001",
+        "linked_model_id": "DM-ASIS-001",
+        "link_type": "dynamic_copy",
+        "join_key": "id_registry.lookup(DM-ASIS-001.品番) = DM-TOBE-001.catenaXId",
+        "note": "Cross-system link via ID translation registry"
+      }
+    ],
+
+    "data_calculations": [
+      {
+        "id": "DC-001",
+        "target_attribute_id": "DA-TOBE-005",
+        "source_model_id": "DM-ASIS-002",
+        "expression": "ISO8601(DM-ASIS-002.生産日)",
+        "note": "Convert Japanese date format YYYY/MM/DD to ISO 8601 datetime"
+      },
+      {
+        "id": "DC-002",
+        "target_attribute_id": "DA-TOBE-004",
+        "source_model_id": "DM-ASIS-001",
+        "expression": "UNECE_CODE_MAP(DM-ASIS-001.単位)",
+        "note": "Map Japanese unit text to UNECE Recommendation 20 common code: '個'→'PCE', 'kg'→'KGM', 'ｍ'→'MTR'"
+      }
+    ],
+
+    "data_calculation_links": [
+      {
+        "id": "DCL-001",
+        "data_calculation_id": "DC-001",
+        "data_link_id": "DL-001"
+      }
+    ]
+  },
+
+  "step5_kpi_assessment": {
+    "_description": "Step 5: KPI Assessment — quantitative interoperability scores for Yamamoto Seiki's data profile",
+
+    "assessment": {
+      "id": "KPI-YAMAMOTO-001",
+      "stakeholder_id": "SH-YAMAMOTO",
+      "direction": "push",
+      "data_conformity": 0.67,
+      "data_sufficiency": 0.63,
+      "data_reliability": 0.60,
+      "assessed_at": "2026-04-11T00:00:00Z",
+      "note": "Assessment of Yamamoto Seiki's ability to PUSH data to Catena-X BOM-as-built"
+    },
+
+    "kpi_breakdown": {
+      "_description": "Non-normative breakdown showing how each KPI was calculated",
+
+      "conformity_detail": {
+        "description": "Ratio of AS-IS data models with valid TO-BE mappings",
+        "total_as_is_models": 3,
+        "models_with_valid_mapping": 2,
+        "score": 0.67,
+        "gap": "DM-ASIS-002 (lot record) has no direct TO-BE counterpart in BOM-as-built"
+      },
+
+      "sufficiency_detail": {
+        "description": "Ratio of TO-BE attributes deliverable from AS-IS in a single transaction",
+        "total_to_be_attributes": 8,
+        "attributes_deliverable": 5,
+        "score": 0.63,
+        "gaps": [
+          "DA-TOBE-005 (createdOn): derivable via DataCalculation but not natively present",
+          "DA-TOBE-007 (businessPartner): requires Catena-X BPNL onboarding — external dependency",
+          "DA-TOBE-008 (hasAlternatives): requires new business process — not in current system"
+        ]
+      },
+
+      "reliability_detail": {
+        "description": "Ratio of deliverable attributes with computable values from source models",
+        "total_deliverable_attributes": 5,
+        "attributes_with_computable_values": 3,
+        "score": 0.60,
+        "issues": [
+          "DA-TOBE-001 (catenaXId): requires external ID registry — computation depends on registry availability",
+          "DA-TOBE-002 (child catenaXId): same external dependency"
+        ]
+      }
+    },
+
+    "improvement_roadmap": {
+      "_description": "Recommended actions to improve KPI scores",
+      "actions": [
+        {
+          "priority": 1,
+          "action": "Register with Catena-X and obtain BPNL",
+          "kpi_impact": "sufficiency +0.13 (businessPartner becomes deliverable)",
+          "effort": "Low (administrative)"
+        },
+        {
+          "priority": 2,
+          "action": "Deploy ID translation registry (品番 ↔ catenaXId)",
+          "kpi_impact": "reliability +0.24 (catenaXId and child catenaXId become computable)",
+          "effort": "Medium (IT system integration)"
+        },
+        {
+          "priority": 3,
+          "action": "Add hasAlternatives flag to parts master",
+          "kpi_impact": "sufficiency +0.13",
+          "effort": "Low (database schema change + business rule)"
+        },
+        {
+          "priority": 4,
+          "action": "Standardise unit codes to UNECE Rec 20",
+          "kpi_impact": "reliability improvement (eliminates mapping ambiguity)",
+          "effort": "Medium (master data cleansing)"
+        }
+      ],
+      "projected_kpi_after_actions": {
+        "data_conformity": 0.67,
+        "data_sufficiency": 0.88,
+        "data_reliability": 0.84,
+        "note": "Conformity remains at 0.67 because lot record (DM-ASIS-002) genuinely has no BOM-as-built counterpart — this is expected and acceptable"
+      }
+    }
+  }
+}
