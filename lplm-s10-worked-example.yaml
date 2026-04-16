@@ -1,4 +1,4 @@
 components:
   schemas:
     Product:
-      $ref: './schemas/product.json'
+      $ref: './lplm-s10-worked-example.json'
