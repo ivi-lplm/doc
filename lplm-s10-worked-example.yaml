@@ -1,4 +1,0 @@
-components:
-  schemas:
-    Product:
-      $ref: './lplm-s10-worked-example.json'
