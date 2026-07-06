@@ -1,0 +1,831 @@
+@prefix : <https://iv-i.or.jp/ontology/pslx#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://iv-i.or.jp/ontology/pslx>
+    a owl:Ontology ;
+    rdfs:label "PSLX Ontology"@en ;
+    owl:versionInfo "1.0" .
+
+:Hierarchy 
+    a owl:Class ;
+    :hasChildHierarchy :Hierarchy ;
+    :consistsOf :Asset.
+
+:Product 
+    a owl:Class ;
+    :tradeItem :ProductionItem ;
+    :hasQuotation :Quotation .
+
+:Asset 
+    a owl:Class ;
+    :hasChildStructure :Structure ;
+    :hasSpecification :Specification ;
+    :hasFunction :Function ;
+    :hasPortion :Portion ;
+    :hasDocument :Document ; 
+    :hasIssue :Issue ;
+    :hasMonitoringContent :Content ;
+    :hasMonitoringResult :Result .
+
+:Group 
+    a owl:Class ;
+    :hasChildGroup :Structure ;
+    :hasCapacity :Capacity .
+
+:Structure 
+    a owl:Class ;
+    :hasParentStructure :Asset ;
+    :hasParentGroup :Group .
+
+:Specification 
+    a owl:Class .
+
+:Function 
+    a owl:Class .
+
+:Portion 
+    a owl:Class .
+
+:Document 
+    a owl:Class .
+
+:Issue 
+    a owl:Class ;
+    :hasCountermeasure :Countermeasure .
+
+:Countermeasure 
+    a owl:Class .
+
+:Process 
+    a owl:Class ;
+    :hasOperation :Operation ;
+    :hasPerformance :Performance ;
+    :createOf :Asset .
+
+:Operation 
+    a owl:Class ;
+    :hasContent :Content .
+
+:Content 
+    a owl:Class ;
+    :hasResult :Result .
+
+:Result 
+    a owl:Class .
+
+:Assignment 
+    a owl:Class ;
+    :assignAsset :Asset ;
+    :assignOf :Operation .
+
+:Capacity 
+    a owl:Class .
+
+:Order 
+    a owl:Class ;
+    :orderOf :Process ;
+    :hasSchedule :Schedule .
+
+:Schedule 
+    a owl:Class ;
+    :useAsset :Asset ;
+    :scheduleResult :Result.
+
+:Performance 
+    a owl:Class ;
+    :termOf :Term .
+
+:Company 
+    a owl:Class .
+
+:Plan 
+    a owl:Class ;
+    :plannedForTerm :Term ;
+    :inHierarchy :Hierarchy ;
+    :inGroup :Group .
+
+:OrderDocument 
+    a owl:Class ;
+    :orderFrom :Company ;
+    :hasOrderContent :OrderContent ;
+    :hasInvoice :Invoice ;
+    :informForecast :Forecast .
+
+:OrderContent 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:Invoice 
+    a owl:Class .
+
+:Forecast 
+    a owl:Class .
+
+:Quotation 
+    a owl:Class .
+
+:Calendar 
+    a owl:Class ;
+    :hasTerm :Term .
+
+:Term 
+    a owl:Class .
+
+# ============================================================
+# ObjectProperty
+# ============================================================
+
+:consistsOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Hierarchy ;
+    rdfs:range :Asset .
+
+:hasChildStructure
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Structure .
+
+:hasChildHierarchy
+    a owl:ObjectProperty ;
+    rdfs:domain :Hierarchy ;
+    rdfs:range :Hierarchy .
+    
+:hasParentStructure
+    a owl:ObjectProperty ;
+    rdfs:domain :Structure ;
+    rdfs:range :Asset .
+    
+:hasChildGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Group ;
+    rdfs:range :Structure .
+
+:hasParentGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Structure ;
+    rdfs:range :Group .
+
+:hasSpecification
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Specification .
+
+:hasFunction
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Function .
+
+:hasPortion
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Portion .
+
+:hasDocument
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Document .
+
+:hasIssue
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Issue .
+
+:hasCountermeasure
+    a owl:ObjectProperty ;
+    rdfs:domain :Issue ;
+    rdfs:range :Countermeasure .
+
+:hasOperation
+    a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :Operation .
+
+:hasContent
+    a owl:ObjectProperty ;
+    rdfs:domain :Operation ;
+    rdfs:range :Content .
+
+:hasResult
+    a owl:ObjectProperty ;
+    rdfs:domain :Content ;
+    rdfs:range :Result .
+
+:scheduleResult
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Result .
+
+:activateResult
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Result .
+
+:resultOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Result ;
+    rdfs:range :Schedule .
+
+:assignAsset
+    a owl:ObjectProperty ;
+    rdfs:domain :Assignment ;
+    rdfs:range :Asset .
+
+:assignOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Assignment ;
+    rdfs:range :Operation .
+
+:orderOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Order ;
+    rdfs:range :Process .
+
+:hasSchedule
+    a owl:ObjectProperty ;
+    rdfs:domain :Order ;
+    rdfs:range :Schedule .
+
+:useAsset
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Asset .
+
+:hasPerformance
+    a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :Performance .
+
+:termOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Performance ;
+    rdfs:range :Term .
+
+:orderFrom
+    a owl:ObjectProperty ;
+    rdfs:domain :OrderDocument ;
+    rdfs:range :Company .
+
+:hasMonitoringContent 
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Content .
+
+:hasMonitoringResult 
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Result .
+
+:isContentOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Result ;
+    rdfs:range :Content .
+
+:plannedForTerm
+    a owl:ObjectProperty ;
+    rdfs:domain :Plan ;
+    rdfs:range :Term .
+
+:inHierarchy
+    a owl:ObjectProperty ;
+    rdfs:domain :Plan ;
+    rdfs:range :Hierarchy .
+
+:inGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Plan ;
+    rdfs:range :Group .
+
+:hasCapacity
+    a owl:ObjectProperty ;
+    rdfs:domain :Group ;
+    rdfs:range :Capacity .
+
+:hasOrderContent
+    a owl:ObjectProperty ;
+    rdfs:domain :OrderDocument ;
+    rdfs:range :OrderContent .
+
+:hasInvoice
+    a owl:ObjectProperty ;
+    rdfs:domain :OrderDocument ;
+    rdfs:range :Invoice .
+
+:informForecast
+    a owl:ObjectProperty ;
+    rdfs:domain :OrderDocument ;
+    rdfs:range :Forecast .
+
+:hasForecast
+    a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Forecast .
+
+:hasQuotation
+    a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Quotation .
+
+:hasTerm
+    a owl:ObjectProperty ;
+    rdfs:domain :Calendar ;
+    rdfs:range :Term .
+
+:capacityTermOf
+    a owl:ObjectProperty ;
+    rdfs:domain :Plan ;
+    rdfs:range :Term .
+
+:tradeItem 
+    a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :ProductionItem .
+
+# =================================
+# sub class
+# =================================
+
+:Enterprise
+    a owl:Class ;
+    rdfs:subClassOf :Hierarchy ;
+    :hasChildHierarchy :Site .
+
+:Site
+    a owl:Class ;
+    rdfs:subClassOf :Hierarchy ;
+    :hasChildHierarchy :Area .
+
+:Area
+    a owl:Class ;
+    rdfs:subClassOf :Hierarchy ;
+    :hasChildHierarchy :ProductionLine .
+
+:ProductionLine
+    a owl:Class ;
+    rdfs:subClassOf :Hierarchy ;
+    :consistsOf :Personnel ;
+    :consistsOf :Equipment .
+
+:ProductionPlan 
+    a owl:Class ;
+    rdfs:subClassOf :Plan ;
+    :plannedForTerm :Term ;
+    :inGroup :ProductionItemGroup .
+
+:CapacityPlan 
+    a owl:Class ;
+    rdfs:subClassOf :Plan ;
+    :capacityTermOf :Term ;
+    :inGroup :ProductionItemGroup .
+
+:SalesPlan 
+    a owl:Class ;
+    rdfs:subClassOf :Plan ;
+    :plannedForTerm :Term ;
+    :inHierarchy :Enterprise ;
+    :inGroup :ProductionItemGroup .
+
+:PurchasePlan 
+    a owl:Class ;
+    rdfs:subClassOf :Plan ;
+    :plannedForTerm :Term ;
+    :inHierarchy :Enterprise ;
+    :inGroup :ProductionItemGroup .
+
+# ========================================================================
+
+:AssetGroup 
+    a owl:Class ;
+    rdfs:subClassOf :Group ;
+    :hasChildGroup :AssetStructure .
+
+:AssetStructure 
+    a owl:Class ;
+    rdfs:subClassOf :Structure ;
+    :hasParentStructure :Asset ;
+    :hasParentGroup :AssetGroup .
+
+:AssetSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .    
+
+:MonitoringContent 
+    a owl:Class ;
+    rdfs:subClassOf :Content .
+
+:MonitoringResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result ;
+    :isContentOf :MonitoringContent .
+
+# ========================================================================
+
+:ProductionItem 
+    a owl:Class ;
+    rdfs:subClassOf :Asset ;
+    :hasChildStructure :ProductionItemStructure ;
+    :hasSpecification :ProductionItemSpecification ;
+    :hasFunction :ProductionItemFunction ;
+    :hasPortion :ProductionItemPortion ;
+    :activateResult :ProductionItemResult .
+
+:ProductionItemGroup 
+    a owl:Class ;
+    rdfs:subClassOf :Group .
+
+:ProductionItemStructure 
+    a owl:Class ;
+    rdfs:subClassOf :Structure .
+
+:ProductionItemFunction 
+    a owl:Class ;
+    rdfs:subClassOf :Function .
+
+:ProductionItemSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:ProductionItemPortion 
+    a owl:Class ;
+    rdfs:subClassOf :Portion .
+
+:ProductionItemDocument 
+    a owl:Class ;
+    rdfs:subClassOf :Document .
+
+:ProductionItemIssue 
+    a owl:Class ;
+    rdfs:subClassOf :Issue .
+
+:ProductionItemCountermeasure 
+    a owl:Class ;
+    rdfs:subClassOf :Countermeasure .
+
+:ProductionItemResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:ProductionProcess 
+    a owl:Class ;
+    rdfs:subClassOf :Process ;
+    :createOf :ProductionItem .
+
+:createOf 
+    a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :Asset .
+
+:ProductionOperation 
+    a owl:Class ;
+    rdfs:subClassOf :Operation .
+
+:ProductionContent 
+    a owl:Class ;
+    rdfs:subClassOf :Content .
+
+:ProductionAssignment 
+    a owl:Class ;
+    rdfs:subClassOf :Assignment .
+
+:ProductionCapacity 
+    a owl:Class ;
+    rdfs:subClassOf :Capacity .
+
+:ProductionOrder 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:ProductionSchedule 
+    a owl:Class ;
+    rdfs:subClassOf :Schedule .
+
+:ProductionPerformance 
+    a owl:Class ;
+    rdfs:subClassOf :Performance .
+
+:ProductionResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+:ProductionDocument 
+    a owl:Class ;
+    rdfs:subClassOf :Document .
+
+:ProductionIssue 
+    a owl:Class ;
+    rdfs:subClassOf :Issue .
+
+:ProductionCountermeasure 
+    a owl:Class ;
+    rdfs:subClassOf :Countermeasure .
+
+# ========================================================================
+
+:Equipment 
+    a owl:Class ;
+    rdfs:subClassOf :Asset ;
+    :hasChildStructure :EquipmentStructure ;
+    :hasSpecification :EquipmentSpecification ;
+    :hasFunction :EquipmentFunction ;
+    :hasPortion :EquipmentPortion ;
+    :activateResult :EquipmentResult .
+
+:EquipmentGroup 
+    a owl:Class ;
+    rdfs:subClassOf :Group .
+
+:EquipmentStructure 
+    a owl:Class ;
+    rdfs:subClassOf :Structure .
+
+:EquipmentFunction 
+    a owl:Class ;
+    rdfs:subClassOf :Function .
+
+:EquipmentSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:EquipmentPortion 
+    a owl:Class ;
+    rdfs:subClassOf :Portion .
+
+:EquipmentDocument 
+    a owl:Class ;
+    rdfs:subClassOf :Document .
+
+:EquipmentIssue 
+    a owl:Class ;
+    rdfs:subClassOf :Issue .
+
+:EquipmentCountermeasure 
+    a owl:Class ;
+    rdfs:subClassOf :Countermeasure .
+
+:EquipmentProcess 
+    a owl:Class ;
+    rdfs:subClassOf :Process .
+
+:EquipmentOperation 
+    a owl:Class ;
+    rdfs:subClassOf :Operation .
+
+:EquipmentContent 
+    a owl:Class ;
+    rdfs:subClassOf :Content .
+
+:EquipmentAssignment 
+    a owl:Class ;
+    rdfs:subClassOf :Assignment .
+
+:EquipmentCapacity 
+    a owl:Class ;
+    rdfs:subClassOf :Capacity .
+
+:EquipmentOrder 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:EquipmentSchedule 
+    a owl:Class ;
+    rdfs:subClassOf :Schedule .
+
+:EquipmentPerformance 
+    a owl:Class ;
+    rdfs:subClassOf :Performance .
+
+:EquipmentResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:Personnel 
+    a owl:Class ;
+    rdfs:subClassOf :Asset ;
+    :hasChildStructure :PersonnelStructure ;
+    :hasSpecification :PersonnelSpecification ;
+    :hasFunction :PersonnelFunction ;
+    :hasPortion :PersonnelPortion ;
+    :activateResult :PersonnelResult .
+
+:PersonnelGroup 
+    a owl:Class ;
+    rdfs:subClassOf :Group .
+
+:PersonnelStructure 
+    a owl:Class ;
+    rdfs:subClassOf :Structure .
+
+:PersonnelSkill 
+    a owl:Class ;
+    rdfs:subClassOf :Function .
+
+:PersonnelSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:PersonnelPortion 
+    a owl:Class ;
+    rdfs:subClassOf :Portion .
+
+:PersonnelDocument 
+    a owl:Class ;
+    rdfs:subClassOf :Document .
+
+:PersonnelIssue 
+    a owl:Class ;
+    rdfs:subClassOf :Issue .
+
+:PersonnelCountermeasure 
+    a owl:Class ;
+    rdfs:subClassOf :Countermeasure .
+
+# ========================================================================
+
+:WorkProcess 
+    a owl:Class ;
+    rdfs:subClassOf :Process .
+
+:WorkOperation 
+    a owl:Class ;
+    rdfs:subClassOf :Operation .
+
+:WorkContent 
+    a owl:Class ;
+    rdfs:subClassOf :Content .
+
+:WorkAssignment 
+    a owl:Class ;
+    rdfs:subClassOf :Assignment .
+
+:WorkCapacity 
+    a owl:Class ;
+    rdfs:subClassOf :Capacity .
+
+:WorkOrder 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:WorkSchedule 
+    a owl:Class ;
+    rdfs:subClassOf :Schedule .
+
+:WorkPerformance 
+    a owl:Class ;
+    rdfs:subClassOf :Performance .
+
+:WorkResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:InventoryItem 
+    a owl:Class ;
+    rdfs:subClassOf :Product .
+
+:InventoryCapacity 
+    a owl:Class ;
+    rdfs:subClassOf :Capacity .
+
+:InventoryOrder 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:InventorySchedule 
+    a owl:Class ;
+    rdfs:subClassOf :Schedule .
+
+:InventoryTransfer 
+    a owl:Class ;
+    rdfs:subClassOf :Performance .
+
+:InventoryResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:Energy 
+    a owl:Class ;
+    rdfs:subClassOf :Asset .
+
+:EnergyGroup 
+    a owl:Class ;
+    rdfs:subClassOf :Group .
+
+:EnergyStructure 
+    a owl:Class ;
+    rdfs:subClassOf :Structure .
+
+:EnergyFunction 
+    a owl:Class ;
+    rdfs:subClassOf :Function .
+
+:EnergySpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:EnergyNode 
+    a owl:Class ;
+    rdfs:subClassOf :Portion .
+
+:EnergyCapacity 
+    a owl:Class ;
+    rdfs:subClassOf :Capacity .
+
+:EnergyOrder 
+    a owl:Class ;
+    rdfs:subClassOf :Order .
+
+:EnergySchedule 
+    a owl:Class ;
+    rdfs:subClassOf :Schedule .
+
+:EnergyPerformance 
+    a owl:Class ;
+    rdfs:subClassOf :Performance .
+
+:EnergyResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:Customer 
+    a owl:Class ;
+    rdfs:subClassOf :Company .
+
+:SalesItem 
+    a owl:Class ;
+    rdfs:subClassOf :Product .
+
+:SalesDocument 
+    a owl:Class ;
+    rdfs:subClassOf :OrderDocument .
+
+:SalesOrder 
+    a owl:Class ;
+    rdfs:subClassOf :OrderContent .
+
+:SalesSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:SalesInvoice 
+    a owl:Class ;
+    rdfs:subClassOf :Invoice .
+
+:SalesForecast 
+    a owl:Class ;
+    rdfs:subClassOf :Forecast .
+
+:SalesQuotation 
+    a owl:Class ;
+    rdfs:subClassOf :Quotation .
+
+:ShippingResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
+# ========================================================================
+
+:Supplier 
+    a owl:Class ;
+    rdfs:subClassOf :Company .
+
+:PurchaseItem 
+    a owl:Class ;
+    rdfs:subClassOf :Product .
+
+:PurchaseDocument 
+    a owl:Class ;
+    rdfs:subClassOf :OrderDocument .
+
+:PurchaseOrder 
+    a owl:Class ;
+    rdfs:subClassOf :OrderContent .
+
+:PurchaseSpecification 
+    a owl:Class ;
+    rdfs:subClassOf :Specification .
+
+:PurchaseInvoice 
+    a owl:Class ;
+    rdfs:subClassOf :Invoice .
+
+:PurchaseForecast 
+    a owl:Class ;
+    rdfs:subClassOf :Forecast .
+
+:PurchaseQuotation 
+    a owl:Class ;
+    rdfs:subClassOf :Quotation .
+
+:ReceivingResult 
+    a owl:Class ;
+    rdfs:subClassOf :Result .
+
