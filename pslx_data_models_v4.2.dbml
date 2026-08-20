@@ -1,0 +1,2482 @@
+// PSLX Data Model 4.2.01 -> dbdiagram.io DBML
+// Source: pslx_data_models_v4_2_jp_20260705.md
+// Generated from Chapter 4 integrated implementation attribute lists.
+// PK/FK and attributes follow the specification; DBML physical types are normalized.
+
+// Category colors
+//   資源階層: #1F77B4
+//   計画管理: #17BECF
+//   資産管理: #7F7F7F
+//   生産品目: #2CA02C
+//   生産工程: #9467BD
+//   設備管理: #8C564B
+//   保全管理: #BCBD22
+//   作業者管理: #E377C2
+//   作業管理: #FF7F0E
+//   在庫管理: #AEC7E8
+//   エネルギ管理: #FDBF6F
+//   販売管理: #D62728
+//   購買管理: #6B8E23
+
+Table enterprise [headercolor: #1F77B4] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "事業者: 自社および取引先となる企業を表す。"
+}
+
+Table area [headercolor: #1F77B4] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エリア: サイト内の区画、フロア、または管理単位を表す。"
+}
+
+Table site [headercolor: #1F77B4] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  enterprise_id varchar [ref: > enterprise.id, note: "事業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "サイト: 生産活動を行う工場や拠点を表す。"
+}
+
+Table production_line [headercolor: #1F77B4] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  area_id varchar [ref: > area.id, note: "エリアID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産ライン: 生産工程を実行するラインまたは設備群を表す。"
+}
+
+Table calendar [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  specification varchar [note: "仕様"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "カレンダ: 稼働日、休日、シフトなどの操業条件を表す。"
+}
+
+Table term [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  calendar_id varchar [ref: > calendar.id, note: "カレンダID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "ターム: カレンダを構成する時間区間を表す。"
+}
+
+Table production_plan [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "計画数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産計画: 生産数量や期間に関する計画を表す。"
+}
+
+Table capacity_plan [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "計画数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "能力計画: 生産能力の確保や配分計画を表す。"
+}
+
+Table sales_plan [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "計画数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "販売計画: 期間ごとの販売目標計画を表す。"
+}
+
+Table purchase_plan [headercolor: #17BECF] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "計画数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買計画: 期間ごとの調達目標計画を表す。"
+}
+
+Table asset [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  specification varchar [note: "仕様"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "アセット: 生産活動に関わる資産の共通情報を表す。"
+}
+
+Table asset_group [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "アセットグループ: 共通属性をもつアセットの分類単位を表す。"
+}
+
+Table asset_structure [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  parent_asset_group_id varchar [ref: > asset_group.id, note: "親アセットグループID"]
+  child_asset_group_id varchar [ref: > asset_group.id, note: "子アセットグループID"]
+  parent_asset_id varchar [ref: > asset.id, note: "親アセットID"]
+  child_asset_id varchar [ref: > asset.id, note: "子アセットID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "アセット構成: アセット間の構成関係や階層構造を表す。"
+}
+
+Table asset_specification [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "アセット仕様: アセットに求められる仕様や性能条件を表す。"
+}
+
+Table monitoring_content [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "監視内容: 設備や工程で監視する対象項目を表す。"
+}
+
+Table monitoring_result [headercolor: #7F7F7F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  monitoring_content_id varchar [ref: > monitoring_content.id, note: "監視内容ID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "監視結果: 監視項目に対する実測値や状態結果を表す。"
+}
+
+Table production_item [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  specification varchar [note: "仕様"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産品目: 生産対象となる製品、部品、材料を表す。"
+}
+
+Table production_item_group [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目グループ: 共通特性をもつ生産品目の分類単位を表す。"
+}
+
+Table production_item_structure [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  parent_production_item_group_id varchar [ref: > production_item_group.id, note: "親品目グループID"]
+  child_production_item_group_id varchar [ref: > production_item_group.id, note: "子品目グループID"]
+  parent_production_item_id varchar [ref: > production_item.id, note: "親生産品目ID"]
+  child_production_item_id varchar [ref: > production_item.id, note: "子生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目構成: 生産品目の部品表や構成関係を表す。"
+}
+
+Table production_item_function [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目機能: 生産品目が提供する機能や役割を表す。"
+}
+
+Table production_item_specification [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目仕様: 生産品目の仕様、品質条件、性能条件を表す。"
+}
+
+Table production_item_portion [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目部位: 生産品目を構成する識別可能な部位を表す。"
+}
+
+Table production_item_document [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  file_link varchar [note: "ファイル"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目図書: 生産品目に関連する図面や仕様書を表す。"
+}
+
+Table production_item_issue [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  issue_at datetime [note: "事象日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目事象: 生産品目に関連する不具合や課題を表す。"
+}
+
+Table production_item_countermeasure [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_issue_id varchar [ref: > production_item_issue.id, note: "品目事象ID"]
+  index_no decimal [note: "追番"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目対策: 品目事象に対する対策内容を表す。"
+}
+
+Table production_item_result [headercolor: #2CA02C] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_schedule_id varchar [ref: > production_schedule.id, note: "生産指示ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "品目結果: 生産品目を生産して得られた実体を示す。"
+}
+
+Table production_process [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産工程: 技術的に定義された生産工程を表す。"
+}
+
+Table production_operation [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  work_hours decimal [note: "生産工数"]
+  work_days decimal [note: "生産日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産手順: 生産工程を具体化した作業手順を表す。"
+}
+
+Table production_content [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産内容: 生産手順を構成する詳細な作業項目を表す。"
+}
+
+Table production_assignment [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産割当: 生産指示に対するリソース割当を表す。"
+}
+
+Table production_capacity [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  maximum_value decimal [note: "最大値"]
+  minimum_value decimal [note: "最小値"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産能力: 生産ラインや工程の能力情報を表す。"
+}
+
+Table production_order [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産オーダ: 生産を要求する指示単位を表す。"
+}
+
+Table production_schedule [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_order_id varchar [ref: > production_order.id, note: "生産オーダID"]
+  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "予定数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産指示: 生産オーダに基づく実行指示を表す。"
+}
+
+Table production_performance [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  time decimal [note: "時間"]
+  time_unit varchar [note: "時間単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産実績: 実際の生産量や稼働実績を表す。"
+}
+
+Table production_result [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_schedule_id varchar [ref: > production_schedule.id, note: "生産指示ID"]
+  production_content_id varchar [ref: > production_content.id, note: "生産項目ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産結果: 生産指示の結果として得られた実行結果を表す。"
+}
+
+Table production_document [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  file_link varchar [note: "ファイル"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産図書: 生産工程に関連する技術文書を表す。"
+}
+
+Table production_issue [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  issue_at datetime [note: "事象日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産事象: 生産活動で発生した問題や異常を表す。"
+}
+
+Table production_countermeasure [headercolor: #9467BD] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_issue_id varchar [ref: > production_issue.id, note: "生産事象ID"]
+  index_no decimal [note: "追番"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "生産対策: 生産事象に対する改善や対策を表す。"
+}
+
+Table equipment [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
+  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
+  specification varchar [note: "仕様"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備: 生産作業を実行する機械や装置を表す。"
+}
+
+Table equipment_group [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備グループ: 共通機能をもつ設備の分類単位を表す。"
+}
+
+Table equipment_structure [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  parent_equipment_group_id varchar [ref: > equipment_group.id, note: "親設備グループID"]
+  child_equipment_group_id varchar [ref: > equipment_group.id, note: "子設備グループID"]
+  parent_equipment_id varchar [ref: > equipment.id, note: "親設備ID"]
+  child_equipment_id varchar [ref: > equipment.id, note: "子設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備構成: 設備の親子関係や構成情報を表す。"
+}
+
+Table equipment_function [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備機能: 設備がもつ機能や役割を表す。"
+}
+
+Table equipment_specification [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備仕様: 設備に求められる性能や仕様条件を表す。"
+}
+
+Table equipment_portion [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備部位: 設備を構成する識別可能な部位を表す。"
+}
+
+Table equipment_document [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  file_link varchar [note: "ファイル"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備図書: 設備に関連する図面やマニュアルを表す。"
+}
+
+Table equipment_issue [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  issue_at datetime [note: "事象日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備事象: 設備に発生した故障や異常を表す。"
+}
+
+Table equipment_countermeasure [headercolor: #8C564B] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_issue_id varchar [ref: > equipment_issue.id, note: "設備事象ID"]
+  index_no decimal [note: "追番"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備対策: 設備事象に対する対策内容を表す。"
+}
+
+Table equipment_process [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備工程: 設備に関する保全や稼働の工程を表す。"
+}
+
+Table equipment_operation [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  work_hours decimal [note: "生産工数"]
+  work_days decimal [note: "生産日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備手順: 設備工程を実行する具体的な手順を表す。"
+}
+
+Table equipment_content [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備内容: 設備手順を構成する詳細な作業項目を表す。"
+}
+
+Table equipment_assignment [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備割当: 生産手順に対する設備割当を表す。"
+}
+
+Table equipment_capacity [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  maximum_value decimal [note: "最大値"]
+  minimum_value decimal [note: "最小値"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備能力: 設備がもつ処理能力や性能を表す。"
+}
+
+Table equipment_order [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備オーダ: 設備に対する作業要求を表す。"
+}
+
+Table equipment_schedule [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
+  equipment_order_id varchar [ref: > equipment_order.id, note: "設備オーダID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "予定数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備指示: 設備オーダに基づく実行指示を表す。"
+}
+
+Table equipment_performance [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  time decimal [note: "時間"]
+  time_unit varchar [note: "時間単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備実績: 設備の稼働実績や運転結果を表す。"
+}
+
+Table equipment_result [headercolor: #BCBD22] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  equipment_content_id varchar [ref: > equipment_content.id, note: "設備項目ID"]
+  equipment_schedule_id varchar [ref: > equipment_schedule.id, note: "設備指示ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "設備結果: 設備作業の結果を表す。"
+}
+
+Table personnel [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
+  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  specification varchar [note: "仕様"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者: 生産活動に従事する作業者を表す。"
+}
+
+Table personnel_group [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者グループ: 共通役割をもつ作業者のグループを表す。"
+}
+
+Table personnel_structure [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者構成: 作業者間の階層や代替関係を表す。"
+}
+
+Table personnel_skill [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者スキル: 作業者が保有する技能や資格を表す。"
+}
+
+Table personnel_specification [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者仕様: 作業者に求められる資格や条件を表す。"
+}
+
+Table personnel_portion [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者部位: 作業者の身体的または機能的な部位を表す。"
+}
+
+Table personnel_document [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  file_link varchar [note: "ファイル"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者図書: 作業者に関連する教育資料や記録を表す。"
+}
+
+Table personnel_issue [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  issue_at datetime [note: "事象日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者事象: 作業者に関連する問題や事故を表す。"
+}
+
+Table personnel_countermeasure [headercolor: #E377C2] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  personnel_issue_id varchar [ref: > personnel_issue.id, note: "作業者事象ID"]
+  index_no decimal [note: "追番"]
+  note varchar [note: "摘要"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業者対策: 作業者事象に対する改善や対策を表す。"
+}
+
+Table work_process [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業工程: 人作業として定義された工程を表す。"
+}
+
+Table work_operation [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_process_id varchar [ref: > work_process.id, note: "作業工程ID"]
+  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  work_hours decimal [note: "生産工数"]
+  work_days decimal [note: "生産日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業手順: 作業工程を実行する具体的な手順を表す。"
+}
+
+Table work_content [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_operation_id varchar [ref: > work_operation.id, note: "作業手順ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業内容: 作業手順を構成する詳細な作業項目を表す。"
+}
+
+Table work_assignment [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_operation_id varchar [ref: > work_operation.id, note: "作業手順ID"]
+  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業割当: 作業指示に対するリソース割当を表す。"
+}
+
+Table work_capacity [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  maximum_value decimal [note: "最大値"]
+  minimum_value decimal [note: "最小値"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業能力: 作業者または作業班の能力を表す。"
+}
+
+Table work_order [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_process_id varchar [ref: > work_process.id, note: "作業工程ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業オーダ: 作業者に対する作業要求を表す。"
+}
+
+Table work_schedule [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_order_id varchar [ref: > work_order.id, note: "作業オーダID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "予定数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業指示: 作業オーダに基づく実行指示を表す。"
+}
+
+Table work_performance [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_order_id varchar [ref: > work_order.id, note: "作業オーダID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  time decimal [note: "時間"]
+  time_unit varchar [note: "時間単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業実績: 作業者または作業班の実績を表す。"
+}
+
+Table work_result [headercolor: #FF7F0E] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  work_schedule_id varchar [ref: > work_schedule.id, note: "作業指示ID"]
+  work_content_id varchar [ref: > work_content.id, note: "作業項目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "作業結果: 作業の実行結果を表す。"
+}
+
+Table inventory_item [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  unit_price decimal [note: "単価"]
+  lead_time decimal [note: "日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫品目: 在庫場所ごとの管理品目を表す。"
+}
+
+Table inventory_capacity [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  maximum_value decimal [note: "最大値"]
+  minimum_value decimal [note: "最小値"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫能力: 在庫場所の保管能力を表す。"
+}
+
+Table inventory_order [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_order_id varchar [ref: > production_order.id, note: "生産オーダID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫オーダ: 在庫品目の移動・補充オーダを表す。"
+}
+
+Table inventory_schedule [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  inventory_order_id varchar [ref: > inventory_order.id, note: "在庫オーダID"]
+  from_inventory_item_id varchar [ref: > inventory_item.id, note: "移動元在庫品目ID"]
+  to_inventory_item_id varchar [ref: > inventory_item.id, note: "移動先在庫品目ID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "予定数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫指示: 在庫品目の移動・補充指示を表す。"
+}
+
+Table inventory_transfer [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  inventory_item_id varchar [ref: > inventory_item.id, note: "在庫品目ID"]
+  inventory_schedule_id varchar [ref: > inventory_schedule.id, note: "在庫指示ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  time decimal [note: "時間"]
+  time_unit varchar [note: "時間単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫移動: 在庫品目の数量増減結果を表す。"
+}
+
+Table inventory_result [headercolor: #AEC7E8] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  inventory_item_id varchar [ref: > inventory_item.id, note: "在庫品目ID"]
+  inventory_schedule_id varchar [ref: > inventory_schedule.id, note: "在庫指示ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "在庫数量: ある時点における在庫数量を表す。"
+}
+
+Table energy [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_group_id varchar [ref: > energy_group.id, note: "エネルギグループID"]
+  specification varchar [note: "仕様"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ: 生産活動に必要なエネルギを表す。"
+}
+
+Table energy_group [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギグループ: エネルギ源の分類単位を表す。"
+}
+
+Table energy_structure [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ構成: エネルギ供給の構成関係を表す。"
+}
+
+Table energy_function [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ機能: エネルギがもつ機能を表す。"
+}
+
+Table energy_specification [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ仕様: エネルギに求められる仕様条件を表す。"
+}
+
+Table energy_node [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ接点: エネルギの供給・消費の接続点を表す。"
+}
+
+Table energy_capacity [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  site_id varchar [ref: > site.id, note: "サイトID"]
+  term_id varchar [ref: > term.id, note: "タームID"]
+  energy_group_id varchar [ref: > energy_group.id, note: "エネルギグループID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  maximum_value decimal [note: "最大値"]
+  minimum_value decimal [note: "最小値"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ能力: 共有可能なエネルギ供給能力を表す。"
+}
+
+Table energy_order [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギオーダ: エネルギの供給・消費オーダを表す。"
+}
+
+Table energy_schedule [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_order_id varchar [ref: > energy_order.id, note: "エネルギオーダID"]
+  index_no decimal [note: "追番"]
+  specification varchar [note: "仕様"]
+  planned_value decimal [note: "予定数量"]
+  actual_value decimal [note: "実績数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ指示: エネルギの供給・消費指示を表す。"
+}
+
+Table energy_performance [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
+  energy_order_id varchar [ref: > energy_order.id, note: "エネルギオーダID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  time decimal [note: "時間"]
+  time_unit varchar [note: "時間単位"]
+  start_at datetime [note: "開始日時"]
+  end_at datetime [note: "終了日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ実績: エネルギの供給・消費実績を表す。"
+}
+
+Table energy_result [headercolor: #FDBF6F] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  energy_schedule_id varchar [ref: > energy_schedule.id, note: "エネルギ指示ID"]
+  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "エネルギ結果: エネルギ接点ごとの記録結果を表す。"
+}
+
+Table customer [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "得意先: 販売品目を提供する相手の事業者を表す。"
+}
+
+Table sales_item [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  unit_price decimal [note: "単価"]
+  lead_time decimal [note: "日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "販売品目: 得意先に提供される生産品目を表す。"
+}
+
+Table sales_document [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  due_at datetime [note: "納期"]
+  order_at datetime [note: "発注日時"]
+  receiving_at datetime [note: "入荷日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "受注伝票: 得意先からの注文の管理単位を表す。"
+}
+
+Table sales_order [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  sales_document_id varchar [ref: > sales_document.id, note: "販売伝票ID"]
+  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "受注明細: 販売品目ごとの受注内容を表す。"
+}
+
+Table sales_specification [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "販売仕様: 得意先ごとの販売条件・仕様を表す。"
+}
+
+Table sales_invoice [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  shipping_result_id varchar [ref: > shipping_result.id, note: "出荷実績ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  invoice_at datetime [note: "請求日時"]
+  payment_at datetime [note: "支払日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "販売請求: 得意先に発行する請求情報を表す。"
+}
+
+Table sales_forecast [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  forecast_at datetime [note: "内示日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "受注内示: 得意先からの需要予測情報を表す。"
+}
+
+Table sales_quotation [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  due_at datetime [note: "納期"]
+  quotation_at datetime [note: "見積日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "販売見積: 得意先への見積依頼と回答を表す。"
+}
+
+Table shipping_result [headercolor: #D62728] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  sales_order_id varchar [ref: > sales_order.id, note: "販売オーダID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "出荷明細: 販売品目の出荷結果を表す。"
+}
+
+Table supplier [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "仕入先: 資材・部品を調達する相手の事業者を表す。"
+}
+
+Table purchase_item [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  unit_price decimal [note: "単価"]
+  lead_time decimal [note: "日数"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買品目: 仕入先から提供される生産品目を表す。"
+}
+
+Table purchase_document [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  due_at datetime [note: "納期"]
+  order_at datetime [note: "発注日時"]
+  receiving_at datetime [note: "入荷日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買伝票: 仕入先への注文の管理単位を表す。"
+}
+
+Table purchase_order [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  purchase_document_id varchar [ref: > purchase_document.id, note: "購買伝票ID"]
+  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  due_at datetime [note: "納期"]
+  release_at datetime [note: "発行日時"]
+  start_at datetime [note: "着手日時"]
+  end_at datetime [note: "完了日時"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買明細: 仕入先への個々の注文内容を表す。"
+}
+
+Table purchase_specification [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買仕様: 仕入先ごとの購買条件・仕様を表す。"
+}
+
+Table purchase_invoice [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  receiving_result_id varchar [ref: > receiving_result.id, note: "入荷実績ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  invoice_at datetime [note: "請求日時"]
+  payment_at datetime [note: "支払日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買請求: 仕入先から受け取る請求情報を表す。"
+}
+
+Table purchase_forecast [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  forecast_at datetime [note: "内示日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "仕入内示: 仕入先への仕入予測通知を表す。"
+}
+
+Table purchase_quotation [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  unit_price decimal [note: "単価"]
+  price decimal [note: "金額"]
+  due_at datetime [note: "納期"]
+  quotation_at datetime [note: "見積日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "購買見積: 仕入先への見積依頼と回答を表す。"
+}
+
+Table receiving_result [headercolor: #6B8E23] {
+  id varchar [pk, note: "ID"]
+  name varchar [note: "名称"]
+  category varchar [note: "分類"]
+  status varchar [note: "状態"]
+  description varchar [note: "説明"]
+  purchase_order_id varchar [ref: > purchase_order.id, note: "購買オーダID"]
+  specification varchar [note: "仕様"]
+  value decimal [note: "数量"]
+  unit varchar [note: "単位"]
+  location varchar [note: "場所"]
+  result_at datetime [note: "結果日時"]
+  created_at datetime [note: "登録日時"]
+  updated_at datetime [note: "更新日時"]
+  created_by varchar [note: "作成者"]
+  approved_by varchar [note: "承認者"]
+  remark varchar [note: "備考"]
+  Note: "入荷明細: 購買品目の入荷結果を表す。"
+}
+
+TableGroup "資源階層" {
+  enterprise
+  area
+  site
+  production_line
+}
+
+TableGroup "計画管理" {
+  calendar
+  term
+  production_plan
+  capacity_plan
+  sales_plan
+  purchase_plan
+}
+
+TableGroup "資産管理" {
+  asset
+  asset_group
+  asset_structure
+  asset_specification
+  monitoring_content
+  monitoring_result
+}
+
+TableGroup "生産品目" {
+  production_item
+  production_item_group
+  production_item_structure
+  production_item_function
+  production_item_specification
+  production_item_portion
+  production_item_document
+  production_item_issue
+  production_item_countermeasure
+  production_item_result
+}
+
+TableGroup "生産工程" {
+  production_process
+  production_operation
+  production_content
+  production_assignment
+  production_capacity
+  production_order
+  production_schedule
+  production_performance
+  production_result
+  production_document
+  production_issue
+  production_countermeasure
+}
+
+TableGroup "設備管理" {
+  equipment
+  equipment_group
+  equipment_structure
+  equipment_function
+  equipment_specification
+  equipment_portion
+  equipment_document
+  equipment_issue
+  equipment_countermeasure
+}
+
+TableGroup "保全管理" {
+  equipment_process
+  equipment_operation
+  equipment_content
+  equipment_assignment
+  equipment_capacity
+  equipment_order
+  equipment_schedule
+  equipment_performance
+  equipment_result
+}
+
+TableGroup "作業者管理" {
+  personnel
+  personnel_group
+  personnel_structure
+  personnel_skill
+  personnel_specification
+  personnel_portion
+  personnel_document
+  personnel_issue
+  personnel_countermeasure
+}
+
+TableGroup "作業管理" {
+  work_process
+  work_operation
+  work_content
+  work_assignment
+  work_capacity
+  work_order
+  work_schedule
+  work_performance
+  work_result
+}
+
+TableGroup "在庫管理" {
+  inventory_item
+  inventory_capacity
+  inventory_order
+  inventory_schedule
+  inventory_transfer
+  inventory_result
+}
+
+TableGroup "エネルギ管理" {
+  energy
+  energy_group
+  energy_structure
+  energy_function
+  energy_specification
+  energy_node
+  energy_capacity
+  energy_order
+  energy_schedule
+  energy_performance
+  energy_result
+}
+
+TableGroup "販売管理" {
+  customer
+  sales_item
+  sales_document
+  sales_order
+  sales_specification
+  sales_invoice
+  sales_forecast
+  sales_quotation
+  shipping_result
+}
+
+TableGroup "購買管理" {
+  supplier
+  purchase_item
+  purchase_document
+  purchase_order
+  purchase_specification
+  purchase_invoice
+  purchase_forecast
+  purchase_quotation
+  receiving_result
+}
+
+
+DiagramView 資源階層 {
+  TableGroups {
+    資源階層
+  }
+}
+
+
+DiagramView Default {
+  *
+}
+
+
+DiagramView 計画管理 {
+  TableGroups {
+    計画管理
+  }
+}
+
+
+DiagramView 資産管理 {
+  TableGroups {
+    資産管理
+  }
+}
+
+
+DiagramView 生産品目 {
+  TableGroups {
+    生産品目
+  }
+}
+
+
+DiagramView 生産工程 {
+  TableGroups {
+    生産工程
+  }
+}
+
+
+DiagramView 設備管理 {
+  TableGroups {
+    設備管理
+  }
+}
+
+
+DiagramView 保全管理 {
+  TableGroups {
+    保全管理
+  }
+}
+
+
+DiagramView 作業者管理 {
+  TableGroups {
+    作業者管理
+  }
+}
+
+
+DiagramView 作業管理 {
+  TableGroups {
+    作業管理
+  }
+}
+
+
+DiagramView 在庫管理 {
+  TableGroups {
+    在庫管理
+  }
+}
+
+
+DiagramView エネルギ管理 {
+  TableGroups {
+    エネルギ管理
+  }
+}
+
+
+DiagramView 販売管理 {
+  TableGroups {
+    販売管理
+  }
+}
+
+
+DiagramView 購買管理 {
+  TableGroups {
+    購買管理
+  }
+}
