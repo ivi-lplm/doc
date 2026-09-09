@@ -223,6 +223,7 @@
 
 :resultOf
     a owl:ObjectProperty ;
+    owl:inverseOf :scheduleResult ;
     rdfs:domain :Result ;
     rdfs:range :Schedule .
 
@@ -278,6 +279,7 @@
 
 :isContentOf
     a owl:ObjectProperty ;
+    owl:inverseOf :hasResult ;
     rdfs:domain :Result ;
     rdfs:range :Content .
 
@@ -341,6 +343,300 @@
     rdfs:domain :Product ;
     rdfs:range :ProductionItem .
 
+# ============================================================
+# Inverse ObjectProperty
+# dbmlの物理FKは「子（明細/付帯情報）テーブル → 親テーブル」の向きで
+# 張られるため、上記の抽象プロパティ（親→子）に対する逆方向プロパティを
+# owl:inverseOf で明示的に定義する。
+# ============================================================
+
+:isSpecificationOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasSpecification ;
+    rdfs:domain :Specification ;
+    rdfs:range :Asset .
+
+:isFunctionOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasFunction ;
+    rdfs:domain :Function ;
+    rdfs:range :Asset .
+
+:isPortionOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasPortion ;
+    rdfs:domain :Portion ;
+    rdfs:range :Asset .
+
+:isDocumentOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasDocument ;
+    rdfs:domain :Document ;
+    rdfs:range :Asset .
+
+:isIssueOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasIssue ;
+    rdfs:domain :Issue ;
+    rdfs:range :Asset .
+
+:isCountermeasureOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasCountermeasure ;
+    rdfs:domain :Countermeasure ;
+    rdfs:range :Issue .
+
+:isContentOfOperation
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasContent ;
+    rdfs:domain :Content ;
+    rdfs:range :Operation .
+
+:isOperationOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasOperation ;
+    rdfs:domain :Operation ;
+    rdfs:range :Process .
+
+:isPerformanceOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasPerformance ;
+    rdfs:domain :Performance ;
+    rdfs:range :Process .
+
+:isScheduleOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasSchedule ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Order .
+
+:isCapacityOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasCapacity ;
+    rdfs:domain :Capacity ;
+    rdfs:range :Group .
+
+:isMonitoringContentOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasMonitoringContent ;
+    rdfs:domain :Content ;
+    rdfs:range :Asset .
+
+:isMonitoringResultOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasMonitoringResult ;
+    rdfs:domain :Result ;
+    rdfs:range :Asset .
+
+:isOrderContentOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasOrderContent ;
+    rdfs:domain :OrderContent ;
+    rdfs:range :OrderDocument .
+
+:isForecastOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasForecast ;
+    rdfs:domain :Forecast ;
+    rdfs:range :Product .
+
+:isQuotationOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasQuotation ;
+    rdfs:domain :Quotation ;
+    rdfs:range :Product .
+
+:isCalendarTermOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :hasTerm ;
+    rdfs:domain :Term ;
+    rdfs:range :Calendar .
+
+:isActivateResultOf
+    a owl:ObjectProperty ;
+    owl:inverseOf :activateResult ;
+    rdfs:domain :Result ;
+    rdfs:range :Asset .
+
+:belongsToHierarchy
+    a owl:ObjectProperty ;
+    owl:inverseOf :consistsOf ;
+    rdfs:domain :Asset ;
+    rdfs:range :Hierarchy .
+
+:isCreatedBy
+    a owl:ObjectProperty ;
+    owl:inverseOf :createOf ;
+    rdfs:domain :Asset ;
+    rdfs:range :Process .
+
+# ============================================================
+# Additional ObjectProperty
+# dbmlのFKのうち、上記の抽象プロパティ体系では表現できなかった
+# 関係（グループ直接参照、Capacity/Calendarのterm・site参照、
+# 販売・購買・在庫の連鎖参照など）を、同じ命名・定義ルールで追加する。
+# ============================================================
+
+:belongsToGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Group .
+
+:belongsToParentGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Group ;
+    rdfs:range :Group .
+
+:processGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Process ;
+    rdfs:range :Group .
+
+:operationGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Operation ;
+    rdfs:range :Group .
+
+:issueGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Issue ;
+    rdfs:range :Group .
+
+:performanceGroup
+    a owl:ObjectProperty ;
+    rdfs:domain :Performance ;
+    rdfs:range :Group .
+
+:issueProcess
+    a owl:ObjectProperty ;
+    rdfs:domain :Issue ;
+    rdfs:range :Process .
+
+:documentProcess
+    a owl:ObjectProperty ;
+    rdfs:domain :Document ;
+    rdfs:range :Process .
+
+:capacityTerm
+    a owl:ObjectProperty ;
+    rdfs:domain :Capacity ;
+    rdfs:range :Term .
+
+:capacitySite
+    a owl:ObjectProperty ;
+    rdfs:domain :Capacity ;
+    rdfs:range :Hierarchy .
+
+:capacityAsset
+    a owl:ObjectProperty ;
+    rdfs:domain :Capacity ;
+    rdfs:range :Asset .
+
+:resultTerm
+    a owl:ObjectProperty ;
+    rdfs:domain :Result ;
+    rdfs:range :Term .
+
+:calendarSite
+    a owl:ObjectProperty ;
+    rdfs:domain :Calendar ;
+    rdfs:range :Hierarchy .
+
+:orderAsset
+    a owl:ObjectProperty ;
+    rdfs:domain :Order ;
+    rdfs:range :Asset .
+
+:relatedOrder
+    a owl:ObjectProperty ;
+    rdfs:domain :Order ;
+    rdfs:range :Order .
+
+:scheduleLocation
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Hierarchy .
+
+:scheduleOperation
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Operation .
+
+:productLocation
+    a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Hierarchy .
+
+:resultProduct
+    a owl:ObjectProperty ;
+    rdfs:domain :Result ;
+    rdfs:range :Product .
+
+:scheduleTransfer
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Performance .
+
+:scheduleProduct
+    a owl:ObjectProperty ;
+    rdfs:domain :Schedule ;
+    rdfs:range :Product .
+
+:performanceProduct
+    a owl:ObjectProperty ;
+    rdfs:domain :Performance ;
+    rdfs:range :Product .
+
+:orderPortion
+    a owl:ObjectProperty ;
+    rdfs:domain :Order ;
+    rdfs:range :Portion .
+
+:performancePortion
+    a owl:ObjectProperty ;
+    rdfs:domain :Performance ;
+    rdfs:range :Portion .
+
+:productCompany
+    a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Company .
+
+:invoiceCompany
+    a owl:ObjectProperty ;
+    rdfs:domain :Invoice ;
+    rdfs:range :Company .
+
+:invoiceResult
+    a owl:ObjectProperty ;
+    rdfs:domain :Invoice ;
+    rdfs:range :Result .
+
+:orderContentProduct
+    a owl:ObjectProperty ;
+    rdfs:domain :OrderContent ;
+    rdfs:range :Product .
+
+:specificationProduct
+    a owl:ObjectProperty ;
+    rdfs:domain :Specification ;
+    rdfs:range :Product .
+
+:quotationCompany
+    a owl:ObjectProperty ;
+    rdfs:domain :Quotation ;
+    rdfs:range :Company .
+
+:resultOrderContent
+    a owl:ObjectProperty ;
+    rdfs:domain :Result ;
+    rdfs:range :OrderContent .
+
+:extendsAsset
+    a owl:ObjectProperty ;
+    rdfs:domain :Asset ;
+    rdfs:range :Asset .
+
 # =================================
 # sub class
 # =================================
@@ -375,8 +671,9 @@
 :CapacityPlan 
     a owl:Class ;
     rdfs:subClassOf :Plan ;
-    :capacityTermOf :Term ;
-    :inGroup :ProductionItemGroup .
+    :capacityTermOf :Term .
+    # inGroup は EquipmentGroup / PersonnelGroup の両方を対象とするため、
+    # 単一クラスに限定せず Plan 基底の :inGroup :Group を継承する。
 
 :SalesPlan 
     a owl:Class ;
@@ -607,9 +904,8 @@
     rdfs:subClassOf :Asset ;
     :hasChildStructure :PersonnelStructure ;
     :hasSpecification :PersonnelSpecification ;
-    :hasFunction :PersonnelFunction ;
-    :hasPortion :PersonnelPortion ;
-    :activateResult :PersonnelResult .
+    :hasFunction :PersonnelSkill ;
+    :hasPortion :PersonnelPortion .
 
 :PersonnelGroup 
     a owl:Class ;
@@ -711,7 +1007,12 @@
 
 :Energy 
     a owl:Class ;
-    rdfs:subClassOf :Asset .
+    rdfs:subClassOf :Asset ;
+    :hasChildStructure :EnergyStructure ;
+    :hasSpecification :EnergySpecification ;
+    :hasFunction :EnergyFunction ;
+    :hasPortion :EnergyNode ;
+    :activateResult :EnergyResult .
 
 :EnergyGroup 
     a owl:Class ;
