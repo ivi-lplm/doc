@@ -42,7 +42,7 @@ Table area [headercolor: #1F77B4] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -61,7 +61,7 @@ Table site [headercolor: #1F77B4] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  enterprise_id varchar [ref: > enterprise.id, note: "事業者ID"]
+  enterprise_id varchar [ref: >? enterprise.id, note: "事業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -80,7 +80,7 @@ Table production_line [headercolor: #1F77B4] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  area_id varchar [ref: > area.id, note: "エリアID"]
+  area_id varchar [ref: >? area.id, note: "エリアID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -99,7 +99,7 @@ Table calendar [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
   specification varchar [note: "仕様"]
   created_at datetime [note: "登録日時"]
   updated_at datetime [note: "更新日時"]
@@ -115,7 +115,7 @@ Table term [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  calendar_id varchar [ref: > calendar.id, note: "カレンダID"]
+  calendar_id varchar [ref: >? calendar.id, note: "カレンダID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -136,9 +136,9 @@ Table production_plan [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "計画数量"]
   actual_value decimal [note: "実績数量"]
@@ -157,9 +157,10 @@ Table capacity_plan [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "計画数量"]
   actual_value decimal [note: "実績数量"]
@@ -178,8 +179,9 @@ Table sales_plan [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "計画数量"]
   actual_value decimal [note: "実績数量"]
@@ -198,8 +200,9 @@ Table purchase_plan [headercolor: #17BECF] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "計画数量"]
   actual_value decimal [note: "実績数量"]
@@ -218,7 +221,7 @@ Table asset [headercolor: #7F7F7F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  asset_group_id varchar [ref: >? asset_group.id, note: "アセットグループID"]
   specification varchar [note: "仕様"]
   location varchar [note: "場所"]
   created_at datetime [note: "登録日時"]
@@ -252,10 +255,10 @@ Table asset_structure [headercolor: #7F7F7F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  parent_asset_group_id varchar [ref: > asset_group.id, note: "親アセットグループID"]
-  child_asset_group_id varchar [ref: > asset_group.id, note: "子アセットグループID"]
-  parent_asset_id varchar [ref: > asset.id, note: "親アセットID"]
-  child_asset_id varchar [ref: > asset.id, note: "子アセットID"]
+  parent_asset_group_id varchar [ref: >? asset_group.id, note: "親アセットグループID"]
+  child_asset_group_id varchar [ref: >? asset_group.id, note: "子アセットグループID"]
+  parent_asset_id varchar [ref: >? asset.id, note: "親アセットID"]
+  child_asset_id varchar [ref: >? asset.id, note: "子アセットID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -273,7 +276,7 @@ Table asset_specification [headercolor: #7F7F7F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  asset_id varchar [ref: >? asset.id, note: "アセットID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -291,7 +294,7 @@ Table monitoring_content [headercolor: #7F7F7F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_id varchar [ref: > asset.id, note: "アセットID"]
+  asset_id varchar [ref: >? asset.id, note: "アセットID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -309,8 +312,8 @@ Table monitoring_result [headercolor: #7F7F7F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  monitoring_content_id varchar [ref: > monitoring_content.id, note: "監視内容ID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
+  monitoring_content_id varchar [ref: >? monitoring_content.id, note: "監視内容ID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -330,9 +333,9 @@ Table production_item [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_id varchar [ref: > asset.id, note: "アセットID"]
-  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
-  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  asset_id varchar [ref: >? asset.id, note: "アセットID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産工程ID"]
   specification varchar [note: "仕様"]
   location varchar [note: "場所"]
   created_at datetime [note: "登録日時"]
@@ -349,7 +352,6 @@ Table production_item_group [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -367,10 +369,10 @@ Table production_item_structure [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  parent_production_item_group_id varchar [ref: > production_item_group.id, note: "親品目グループID"]
-  child_production_item_group_id varchar [ref: > production_item_group.id, note: "子品目グループID"]
-  parent_production_item_id varchar [ref: > production_item.id, note: "親生産品目ID"]
-  child_production_item_id varchar [ref: > production_item.id, note: "子生産品目ID"]
+  parent_production_item_group_id varchar [ref: >? production_item_group.id, note: "親品目グループID"]
+  child_production_item_group_id varchar [ref: >? production_item_group.id, note: "子品目グループID"]
+  parent_production_item_id varchar [ref: >? production_item.id, note: "親生産品目ID"]
+  child_production_item_id varchar [ref: >? production_item.id, note: "子生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -388,7 +390,7 @@ Table production_item_function [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -406,7 +408,7 @@ Table production_item_specification [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -424,7 +426,7 @@ Table production_item_portion [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -443,7 +445,7 @@ Table production_item_document [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -462,8 +464,8 @@ Table production_item_issue [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
-  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -483,7 +485,7 @@ Table production_item_countermeasure [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_issue_id varchar [ref: > production_item_issue.id, note: "品目事象ID"]
+  production_item_issue_id varchar [ref: >? production_item_issue.id, note: "品目事象ID"]
   index_no decimal [note: "追番"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
@@ -504,8 +506,8 @@ Table production_item_result [headercolor: #2CA02C] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
-  production_schedule_id varchar [ref: > production_schedule.id, note: "生産指示ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  production_schedule_id varchar [ref: >? production_schedule.id, note: "生産指示ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -525,7 +527,7 @@ Table production_process [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -543,9 +545,9 @@ Table production_operation [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産工程ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -566,7 +568,7 @@ Table production_content [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
+  production_operation_id varchar [ref: >? production_operation.id, note: "生産手順ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -584,9 +586,9 @@ Table production_assignment [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  production_operation_id varchar [ref: >? production_operation.id, note: "生産手順ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -605,8 +607,8 @@ Table production_capacity [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  production_item_group_id varchar [ref: > production_item_group.id, note: "品目グループID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_item_group_id varchar [ref: >? production_item_group.id, note: "品目グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -626,7 +628,8 @@ Table production_order [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産工程ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -649,11 +652,12 @@ Table production_schedule [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_order_id varchar [ref: > production_order.id, note: "生産オーダID"]
-  production_operation_id varchar [ref: > production_operation.id, note: "生産手順ID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
-  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
+  production_order_id varchar [ref: >? production_order.id, note: "生産オーダID"]
+  production_operation_id varchar [ref: >? production_operation.id, note: "生産手順ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
+  production_line_id varchar [ref: >? production_line.id, note: "生産ラインID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "予定数量"]
@@ -676,8 +680,8 @@ Table production_performance [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  production_process_id varchar [ref: > production_process.id, note: "生産工程ID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産工程ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -699,9 +703,10 @@ Table production_result [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_schedule_id varchar [ref: > production_schedule.id, note: "生産指示ID"]
-  production_content_id varchar [ref: > production_content.id, note: "生産項目ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  production_schedule_id varchar [ref: >? production_schedule.id, note: "生産指示ID"]
+  production_content_id varchar [ref: >? production_content.id, note: "生産項目ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -721,7 +726,8 @@ Table production_document [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産工程ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -740,8 +746,9 @@ Table production_issue [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  production_process_id varchar [ref: >? production_process.id, note: "生産プロセスID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -761,7 +768,7 @@ Table production_countermeasure [headercolor: #9467BD] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_issue_id varchar [ref: > production_issue.id, note: "生産事象ID"]
+  production_issue_id varchar [ref: >? production_issue.id, note: "生産事象ID"]
   index_no decimal [note: "追番"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
@@ -782,10 +789,10 @@ Table equipment [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
-  asset_id varchar [ref: > asset.id, note: "アセットID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
-  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
+  production_line_id varchar [ref: >? production_line.id, note: "生産ラインID"]
+  asset_id varchar [ref: >? asset.id, note: "アセットID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  energy_node_id varchar [ref: >? energy_node.id, note: "エネルギ接点ID"]
   specification varchar [note: "仕様"]
   location varchar [note: "場所"]
   created_at datetime [note: "登録日時"]
@@ -802,7 +809,7 @@ Table equipment_group [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  asset_group_id varchar [ref: >? asset_group.id, note: "アセットグループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -820,10 +827,10 @@ Table equipment_structure [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  parent_equipment_group_id varchar [ref: > equipment_group.id, note: "親設備グループID"]
-  child_equipment_group_id varchar [ref: > equipment_group.id, note: "子設備グループID"]
-  parent_equipment_id varchar [ref: > equipment.id, note: "親設備ID"]
-  child_equipment_id varchar [ref: > equipment.id, note: "子設備ID"]
+  parent_equipment_group_id varchar [ref: >? equipment_group.id, note: "親設備グループID"]
+  child_equipment_group_id varchar [ref: >? equipment_group.id, note: "子設備グループID"]
+  parent_equipment_id varchar [ref: >? equipment.id, note: "親設備ID"]
+  child_equipment_id varchar [ref: >? equipment.id, note: "子設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -841,7 +848,7 @@ Table equipment_function [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -859,7 +866,7 @@ Table equipment_specification [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -877,7 +884,7 @@ Table equipment_portion [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -896,7 +903,7 @@ Table equipment_document [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -915,8 +922,8 @@ Table equipment_issue [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -936,7 +943,7 @@ Table equipment_countermeasure [headercolor: #8C564B] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_issue_id varchar [ref: > equipment_issue.id, note: "設備事象ID"]
+  equipment_issue_id varchar [ref: >? equipment_issue.id, note: "設備事象ID"]
   index_no decimal [note: "追番"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
@@ -958,6 +965,7 @@ Table equipment_process [headercolor: #BCBD22] {
   status varchar [note: "状態"]
   description varchar [note: "説明"]
   specification varchar [note: "仕様"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
   created_at datetime [note: "登録日時"]
@@ -974,9 +982,9 @@ Table equipment_operation [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  equipment_process_id varchar [ref: >? equipment_process.id, note: "設備工程ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -997,7 +1005,7 @@ Table equipment_content [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
+  equipment_operation_id varchar [ref: >? equipment_operation.id, note: "設備手順ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1015,9 +1023,9 @@ Table equipment_assignment [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  equipment_operation_id varchar [ref: >? equipment_operation.id, note: "設備手順ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -1036,8 +1044,8 @@ Table equipment_capacity [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1057,7 +1065,7 @@ Table equipment_order [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
+  equipment_process_id varchar [ref: >? equipment_process.id, note: "設備工程ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1080,10 +1088,10 @@ Table equipment_schedule [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_operation_id varchar [ref: > equipment_operation.id, note: "設備手順ID"]
-  equipment_order_id varchar [ref: > equipment_order.id, note: "設備オーダID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  equipment_operation_id varchar [ref: >? equipment_operation.id, note: "設備手順ID"]
+  equipment_order_id varchar [ref: >? equipment_order.id, note: "設備オーダID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "予定数量"]
@@ -1106,8 +1114,8 @@ Table equipment_performance [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  equipment_process_id varchar [ref: > equipment_process.id, note: "設備工程ID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  equipment_process_id varchar [ref: >? equipment_process.id, note: "設備工程ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1129,8 +1137,8 @@ Table equipment_result [headercolor: #BCBD22] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  equipment_content_id varchar [ref: > equipment_content.id, note: "設備項目ID"]
-  equipment_schedule_id varchar [ref: > equipment_schedule.id, note: "設備指示ID"]
+  equipment_content_id varchar [ref: >? equipment_content.id, note: "設備項目ID"]
+  equipment_schedule_id varchar [ref: >? equipment_schedule.id, note: "設備指示ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1150,9 +1158,9 @@ Table personnel [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_line_id varchar [ref: > production_line.id, note: "生産ラインID"]
-  asset_id varchar [ref: > asset.id, note: "アセットID"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  production_line_id varchar [ref: >? production_line.id, note: "生産ラインID"]
+  asset_id varchar [ref: >? asset.id, note: "アセットID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   specification varchar [note: "仕様"]
   location varchar [note: "場所"]
   created_at datetime [note: "登録日時"]
@@ -1169,7 +1177,7 @@ Table personnel_group [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  asset_group_id varchar [ref: > asset_group.id, note: "アセットグループID"]
+  asset_group_id varchar [ref: >? asset_group.id, note: "アセットグループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1187,8 +1195,8 @@ Table personnel_structure [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1206,7 +1214,7 @@ Table personnel_skill [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1224,7 +1232,7 @@ Table personnel_specification [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1242,7 +1250,7 @@ Table personnel_portion [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1261,7 +1269,7 @@ Table personnel_document [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1280,8 +1288,8 @@ Table personnel_issue [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1301,7 +1309,7 @@ Table personnel_countermeasure [headercolor: #E377C2] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  personnel_issue_id varchar [ref: > personnel_issue.id, note: "作業者事象ID"]
+  personnel_issue_id varchar [ref: >? personnel_issue.id, note: "作業者事象ID"]
   index_no decimal [note: "追番"]
   note varchar [note: "摘要"]
   value decimal [note: "数量"]
@@ -1322,6 +1330,7 @@ Table work_process [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1339,9 +1348,9 @@ Table work_operation [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_process_id varchar [ref: > work_process.id, note: "作業工程ID"]
-  equipment_group_id varchar [ref: > equipment_group.id, note: "設備グループID"]
-  personnel_group_id varchar [ref: > personnel_group.id, note: "作業者グループID"]
+  work_process_id varchar [ref: >? work_process.id, note: "作業工程ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -1362,7 +1371,7 @@ Table work_content [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_operation_id varchar [ref: > work_operation.id, note: "作業手順ID"]
+  work_operation_id varchar [ref: >? work_operation.id, note: "作業手順ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1380,9 +1389,9 @@ Table work_assignment [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_operation_id varchar [ref: > work_operation.id, note: "作業手順ID"]
-  personnel_id varchar [ref: > personnel.id, note: "作業者ID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  work_operation_id varchar [ref: >? work_operation.id, note: "作業手順ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
@@ -1401,8 +1410,9 @@ Table work_capacity [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1422,7 +1432,7 @@ Table work_order [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_process_id varchar [ref: > work_process.id, note: "作業工程ID"]
+  work_process_id varchar [ref: >? work_process.id, note: "作業工程ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1445,7 +1455,10 @@ Table work_schedule [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_order_id varchar [ref: > work_order.id, note: "作業オーダID"]
+  work_order_id varchar [ref: >? work_order.id, note: "作業オーダID"]
+  work_operation_id varchar [ref: >? work_operation.id, note: "作業手順ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
+  personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "予定数量"]
@@ -1468,8 +1481,8 @@ Table work_performance [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_order_id varchar [ref: > work_order.id, note: "作業オーダID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
+  work_process_id varchar [ref: >? work_process.id, note: "作業オーダID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1491,8 +1504,8 @@ Table work_result [headercolor: #FF7F0E] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  work_schedule_id varchar [ref: > work_schedule.id, note: "作業指示ID"]
-  work_content_id varchar [ref: > work_content.id, note: "作業項目ID"]
+  work_schedule_id varchar [ref: >? work_schedule.id, note: "作業指示ID"]
+  work_content_id varchar [ref: >? work_content.id, note: "作業項目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1512,7 +1525,8 @@ Table inventory_item [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  production_line_id varchar [ref: >? production_line.id, note: "生産ラインID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1533,9 +1547,9 @@ Table inventory_capacity [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1555,8 +1569,8 @@ Table inventory_order [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
-  production_order_id varchar [ref: > production_order.id, note: "生産オーダID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  production_order_id varchar [ref: >? production_order.id, note: "生産オーダID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1579,9 +1593,10 @@ Table inventory_schedule [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  inventory_order_id varchar [ref: > inventory_order.id, note: "在庫オーダID"]
-  from_inventory_item_id varchar [ref: > inventory_item.id, note: "移動元在庫品目ID"]
-  to_inventory_item_id varchar [ref: > inventory_item.id, note: "移動先在庫品目ID"]
+  inventory_transfer_id varchar [ref: >? inventory_transfer.id, note: "在庫移動ID"] 
+  inventory_order_id varchar [ref: >? inventory_order.id, note: "在庫オーダID"]
+  from_inventory_item_id varchar [ref: >? inventory_item.id, note: "移動元在庫品目ID"]
+  to_inventory_item_id varchar [ref: >? inventory_item.id, note: "移動先在庫品目ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "予定数量"]
@@ -1604,8 +1619,9 @@ Table inventory_transfer [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  inventory_item_id varchar [ref: > inventory_item.id, note: "在庫品目ID"]
-  inventory_schedule_id varchar [ref: > inventory_schedule.id, note: "在庫指示ID"]
+  inventory_item_id varchar [ref: >? inventory_item.id, note: "在庫品目ID"]
+  equipment_group_id varchar [ref: >? equipment_group.id, note: "設備グループID"]
+  personnel_group_id varchar [ref: >? personnel_group.id, note: "作業者グループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1627,8 +1643,8 @@ Table inventory_result [headercolor: #AEC7E8] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  inventory_item_id varchar [ref: > inventory_item.id, note: "在庫品目ID"]
-  inventory_schedule_id varchar [ref: > inventory_schedule.id, note: "在庫指示ID"]
+  inventory_item_id varchar [ref: >? inventory_item.id, note: "在庫品目ID"]
+  inventory_schedule_id varchar [ref: >? inventory_schedule.id, note: "在庫指示ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1648,7 +1664,7 @@ Table energy [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_group_id varchar [ref: > energy_group.id, note: "エネルギグループID"]
+  energy_group_id varchar [ref: >? energy_group.id, note: "エネルギグループID"]
   specification varchar [note: "仕様"]
   location varchar [note: "場所"]
   created_at datetime [note: "登録日時"]
@@ -1682,7 +1698,7 @@ Table energy_structure [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  energy_id varchar [ref: >? energy.id, note: "エネルギID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1700,7 +1716,7 @@ Table energy_function [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  energy_id varchar [ref: >? energy.id, note: "エネルギID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1718,7 +1734,7 @@ Table energy_specification [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  energy_id varchar [ref: >? energy.id, note: "エネルギID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1736,7 +1752,7 @@ Table energy_node [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_id varchar [ref: > energy.id, note: "エネルギID"]
+  energy_id varchar [ref: >? energy.id, note: "エネルギID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1755,9 +1771,9 @@ Table energy_capacity [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  site_id varchar [ref: > site.id, note: "サイトID"]
-  term_id varchar [ref: > term.id, note: "タームID"]
-  energy_group_id varchar [ref: > energy_group.id, note: "エネルギグループID"]
+  site_id varchar [ref: >? site.id, note: "サイトID"]
+  term_id varchar [ref: >? term.id, note: "タームID"]
+  energy_group_id varchar [ref: >? energy_group.id, note: "エネルギグループID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1777,7 +1793,7 @@ Table energy_order [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
+  energy_node_id varchar [ref: >? energy_node.id, note: "エネルギ接点ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1800,7 +1816,7 @@ Table energy_schedule [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_order_id varchar [ref: > energy_order.id, note: "エネルギオーダID"]
+  energy_order_id varchar [ref: >? energy_order.id, note: "エネルギオーダID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   planned_value decimal [note: "予定数量"]
@@ -1823,8 +1839,7 @@ Table energy_performance [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_node_id varchar [ref: > energy_node.id, note: "エネルギ接点ID"]
-  energy_order_id varchar [ref: > energy_order.id, note: "エネルギオーダID"]
+  energy_node_id varchar [ref: >? energy_node.id, note: "エネルギ接点ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1846,8 +1861,8 @@ Table energy_result [headercolor: #FDBF6F] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  energy_schedule_id varchar [ref: > energy_schedule.id, note: "エネルギ指示ID"]
-  equipment_id varchar [ref: > equipment.id, note: "設備ID"]
+  energy_schedule_id varchar [ref: >? energy_schedule.id, note: "エネルギ指示ID"]
+  equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1881,8 +1896,8 @@ Table sales_item [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
-  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  customer_id varchar [ref: >? customer.id, note: "得意先ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1903,7 +1918,7 @@ Table sales_document [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  customer_id varchar [ref: >? customer.id, note: "得意先ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1926,8 +1941,8 @@ Table sales_order [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  sales_document_id varchar [ref: > sales_document.id, note: "販売伝票ID"]
-  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  sales_document_id varchar [ref: >? sales_document.id, note: "販売伝票ID"]
+  sales_item_id varchar [ref: >? sales_item.id, note: "販売品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1952,7 +1967,7 @@ Table sales_specification [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  customer_id varchar [ref: > customer.id, note: "顧客ID"]
+  sales_item_id varchar [ref: >? sales_item.id, note: "販売品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1970,8 +1985,8 @@ Table sales_invoice [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  customer_id varchar [ref: > customer.id, note: "顧客ID"]
-  shipping_result_id varchar [ref: > shipping_result.id, note: "出荷実績ID"]
+  customer_id varchar [ref: >? customer.id, note: "得意先ID"]
+  shipping_result_id varchar [ref: >? shipping_result.id, note: "出荷実績ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -1993,7 +2008,7 @@ Table sales_forecast [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  sales_item_id varchar [ref: >? sales_item.id, note: "販売品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2012,8 +2027,8 @@ Table sales_quotation [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  customer_id varchar [ref: > customer.id, note: "顧客ID"]
-  sales_item_id varchar [ref: > sales_item.id, note: "販売品目ID"]
+  customer_id varchar [ref: >? customer.id, note: "得意先ID"]
+  sales_item_id varchar [ref: >? sales_item.id, note: "販売品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2035,7 +2050,7 @@ Table shipping_result [headercolor: #D62728] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  sales_order_id varchar [ref: > sales_order.id, note: "販売オーダID"]
+  sales_order_id varchar [ref: >? sales_order.id, note: "販売オーダID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2069,8 +2084,8 @@ Table purchase_item [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  production_item_id varchar [ref: > production_item.id, note: "生産品目ID"]
-  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
+  supplier_id varchar [ref: >? supplier.id, note: "仕入先ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2091,7 +2106,7 @@ Table purchase_document [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  supplier_id varchar [ref: >? supplier.id, note: "仕入先ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2114,8 +2129,8 @@ Table purchase_order [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  purchase_document_id varchar [ref: > purchase_document.id, note: "購買伝票ID"]
-  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  purchase_document_id varchar [ref: >? purchase_document.id, note: "購買伝票ID"]
+  purchase_item_id varchar [ref: >? purchase_item.id, note: "購買品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2140,7 +2155,7 @@ Table purchase_specification [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
+  purchase_item_id varchar [ref: >? purchase_item.id, note: "購買品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2158,8 +2173,8 @@ Table purchase_invoice [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
-  receiving_result_id varchar [ref: > receiving_result.id, note: "入荷実績ID"]
+  supplier_id varchar [ref: >? supplier.id, note: "仕入先ID"]
+  receiving_result_id varchar [ref: >? receiving_result.id, note: "入荷実績ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2181,7 +2196,7 @@ Table purchase_forecast [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  purchase_item_id varchar [ref: >? purchase_item.id, note: "購買品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2200,8 +2215,8 @@ Table purchase_quotation [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  supplier_id varchar [ref: > supplier.id, note: "仕入先ID"]
-  purchase_item_id varchar [ref: > purchase_item.id, note: "購買品目ID"]
+  supplier_id varchar [ref: >? supplier.id, note: "仕入先ID"]
+  purchase_item_id varchar [ref: >? purchase_item.id, note: "購買品目ID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2223,7 +2238,7 @@ Table receiving_result [headercolor: #6B8E23] {
   category varchar [note: "分類"]
   status varchar [note: "状態"]
   description varchar [note: "説明"]
-  purchase_order_id varchar [ref: > purchase_order.id, note: "購買オーダID"]
+  purchase_order_id varchar [ref: >? purchase_order.id, note: "購買オーダID"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
   unit varchar [note: "単位"]
@@ -2253,6 +2268,25 @@ TableGroup "計画管理" {
   purchase_plan
 }
 
+TableGroup "能力管理" {
+  production_capacity
+  equipment_capacity
+  work_capacity
+  inventory_capacity
+  energy_capacity
+}
+
+TableGroup "課題管理" {
+  production_item_issue
+  production_item_countermeasure
+  production_issue
+  production_countermeasure
+  equipment_issue
+  equipment_countermeasure
+  personnel_issue
+  personnel_countermeasure
+}
+
 TableGroup "資産管理" {
   asset
   asset_group
@@ -2270,8 +2304,6 @@ TableGroup "生産品目" {
   production_item_specification
   production_item_portion
   production_item_document
-  production_item_issue
-  production_item_countermeasure
   production_item_result
 }
 
@@ -2279,15 +2311,11 @@ TableGroup "生産工程" {
   production_process
   production_operation
   production_content
-  production_assignment
-  production_capacity
   production_order
   production_schedule
   production_performance
   production_result
   production_document
-  production_issue
-  production_countermeasure
 }
 
 TableGroup "設備管理" {
@@ -2298,16 +2326,12 @@ TableGroup "設備管理" {
   equipment_specification
   equipment_portion
   equipment_document
-  equipment_issue
-  equipment_countermeasure
 }
 
 TableGroup "保全管理" {
   equipment_process
   equipment_operation
   equipment_content
-  equipment_assignment
-  equipment_capacity
   equipment_order
   equipment_schedule
   equipment_performance
@@ -2322,16 +2346,12 @@ TableGroup "作業者管理" {
   personnel_specification
   personnel_portion
   personnel_document
-  personnel_issue
-  personnel_countermeasure
 }
 
 TableGroup "作業管理" {
   work_process
   work_operation
   work_content
-  work_assignment
-  work_capacity
   work_order
   work_schedule
   work_performance
@@ -2340,7 +2360,6 @@ TableGroup "作業管理" {
 
 TableGroup "在庫管理" {
   inventory_item
-  inventory_capacity
   inventory_order
   inventory_schedule
   inventory_transfer
@@ -2354,7 +2373,6 @@ TableGroup "エネルギ管理" {
   energy_function
   energy_specification
   energy_node
-  energy_capacity
   energy_order
   energy_schedule
   energy_performance
@@ -2385,6 +2403,11 @@ TableGroup "購買管理" {
   receiving_result
 }
 
+TableGroup "割当管理" {
+  production_assignment
+  equipment_assignment
+  work_assignment
+}
 
 DiagramView 資源階層 {
   TableGroups {
@@ -2413,6 +2436,9 @@ DiagramView 資産管理 {
 
 
 DiagramView 生産品目 {
+  Tables {
+    asset
+  }
   TableGroups {
     生産品目
   }
@@ -2420,6 +2446,9 @@ DiagramView 生産品目 {
 
 
 DiagramView 生産工程 {
+  Tables {
+    production_item_group
+  }
   TableGroups {
     生産工程
   }
@@ -2433,7 +2462,10 @@ DiagramView 設備管理 {
 }
 
 
-DiagramView 保全管理 {
+DiagramView 保全工程 {
+  Tables {
+    equipment_group
+  }
   TableGroups {
     保全管理
   }
@@ -2447,7 +2479,10 @@ DiagramView 作業者管理 {
 }
 
 
-DiagramView 作業管理 {
+DiagramView 作業工程 {
+  Tables {
+    personnel_group
+  }
   TableGroups {
     作業管理
   }
@@ -2478,5 +2513,119 @@ DiagramView 販売管理 {
 DiagramView 購買管理 {
   TableGroups {
     購買管理
+  }
+}
+
+
+DiagramView 手順割当 {
+  Tables {
+    production_assignment
+    equipment_assignment
+    work_assignment
+    equipment
+    personnel
+    production_operation
+    equipment_operation
+    work_operation
+  }
+}
+
+DiagramView 手順指示 {
+  Tables {
+    equipment_schedule
+    work_schedule
+    production_schedule
+    equipment
+    personnel
+    production_operation
+    equipment_operation
+    work_operation
+  }
+}
+
+
+
+DiagramView 課題管理 {
+  TableGroups {
+    課題管理
+  }
+}
+
+
+DiagramView 能力管理 {
+  TableGroups {
+    能力管理
+  }
+}
+
+
+DiagramView 生産管理 {
+  Tables {
+    production_schedule
+    production_item
+    equipment
+    personnel
+    production_process
+    equipment_group
+    personnel_group
+    production_item_group
+    production_operation
+    production_assignment
+  }
+}
+
+
+DiagramView 工程管理 {
+  Tables {
+    production_process
+    production_operation
+    production_schedule
+    equipment
+    personnel
+    production_assignment
+  }
+}
+
+
+DiagramView "グループ（生産品目）" {
+  Tables {
+    production_item_group
+    production_plan
+    sales_plan
+    purchase_plan
+    production_process
+    production_item_issue
+    production_capacity
+    production_operation
+  }
+}
+
+
+DiagramView "グループ（設備）" {
+  Tables {
+    equipment_group
+    capacity_plan
+    equipment_process
+    production_issue
+    equipment_issue
+    production_operation
+    equipment_operation
+    work_operation
+    equipment_capacity
+  }
+}
+
+
+
+DiagramView "グループ（作業者）" {
+  Tables {
+    personnel_group
+    work_capacity
+    work_operation
+    personnel_issue
+    production_operation
+    equipment_operation
+    work_process
+    capacity_plan
   }
 }
