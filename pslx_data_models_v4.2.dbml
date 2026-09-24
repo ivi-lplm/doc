@@ -589,6 +589,7 @@ Table production_assignment [headercolor: #9467BD] {
   production_operation_id varchar [ref: >? production_operation.id, note: "生産手順ID"]
   equipment_id varchar [ref: >? equipment.id, note: "設備ID"]
   personnel_id varchar [ref: >? personnel.id, note: "作業者ID"]
+  production_item_id varchar [ref: >? production_item.id, note: "生産品目ID"]
   index_no decimal [note: "追番"]
   specification varchar [note: "仕様"]
   value decimal [note: "数量"]
